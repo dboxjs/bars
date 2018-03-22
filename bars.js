@@ -16,8 +16,10 @@ export default function (config, helper) {
       .attr('class', 'd3-tip')
       .direction('n')
       .html(vm._config.tip || function (d) {
-        console.log(d);
-        return vm.utils.format(d[vm._config.y]);
+        var html = '';
+        html += Number.isNaN(+d[vm._config.x]) ? '' : vm.utils.format(d[vm._config.x]);
+        html += Number.isNaN(+d[vm._config.y]) ? '': vm.utils.format(d[vm._config.y]);
+        return html;
       });
   };
 
@@ -98,10 +100,11 @@ export default function (config, helper) {
 
   Bars.format = function (format) {
     var vm = this;
-    if (typeof format == 'function' || format instanceof Function)
+    if (typeof format == 'function' || format instanceof Function) {
       vm.utils.format = format;
-    else
+    } else {
       vm.utils.format = d3.format(format);
+    }
     return vm;
   };
 
@@ -344,7 +347,9 @@ export default function (config, helper) {
       })
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
-        if (vm._config.xAxis.scale == 'linear') value = 0;
+        if (vm._config.xAxis.scale == 'linear') {
+          value = 0;
+        }
         return value;
       })
       .attr('y', function (d) {
