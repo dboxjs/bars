@@ -181,6 +181,9 @@ export default function (config, helper) {
         range: [0, vm.chart.width],
         minZero: vm._config.xAxis.minZero
       };
+      if (vm._config.xAxis.domains) {
+        config.domains = vm._config.xAxis.domains;
+      }
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
       config = {
@@ -189,6 +192,9 @@ export default function (config, helper) {
         range: [vm.chart.height, 0],
         minZero: vm._config.yAxis.minZero
       };
+      if (vm._config.yAxis.domains) {
+        config.domains = vm._config.yAxis.domains;
+      }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
@@ -202,6 +208,9 @@ export default function (config, helper) {
         range: [0, vm.chart.width],
         minZero: vm._config.xAxis.minZero
       };
+      if (vm._config.xAxis.domains) {
+        config.domains = vm._config.xAxis.domains;
+      }
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
       /* Generate groupBy scale */
@@ -220,8 +229,11 @@ export default function (config, helper) {
         type: vm._config.yAxis.scale,
         groupBy: 'data',
         range: [vm.chart.height, 0],
-        minZero: vm._config.yAxis.minZero
+        minZero: vm._config.yAxis.minZero,
       };
+      if(vm._config.yAxis.domains) {
+        config.domains = vm._config.yAxis.domains;
+      }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
@@ -235,6 +247,9 @@ export default function (config, helper) {
         range: [0, vm.chart.height],
         minZero: vm._config.yAxis.minZero
       };
+      if (vm._config.yAxis.domains) {
+        config.domains = vm._config.yAxis.domains;
+      }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
 
       /* Generate groupBy scale */
@@ -255,6 +270,9 @@ export default function (config, helper) {
         range: [0, vm.chart.width],
         minZero: vm._config.xAxis.minZero
       };
+      if (vm._config.xAxis.domains) {
+        config.domains = vm._config.xAxis.domains;
+      }
       vm._scales.x = vm.utils.generateScale(vm._data, config);
     }
 
@@ -269,6 +287,9 @@ export default function (config, helper) {
         range: [0, vm.chart.width],
         minZero: vm._config.xAxis.minZero
       };
+      if (vm._config.xAxis.domains) {
+        config.domains = vm._config.xAxis.domains;
+      }
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
       /* Generate y scale */
@@ -279,6 +300,9 @@ export default function (config, helper) {
         range: [vm.chart.height, 0],
         minZero: vm._config.yAxis.minZero
       };
+      if (vm._config.yAxis.domains) {
+        config.domains = vm._config.yAxis.domains;
+      }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
@@ -292,6 +316,9 @@ export default function (config, helper) {
         range: [0, vm.chart.width],
         minZero: vm._config.xAxis.minZero
       };
+      if (vm._config.xAxis.domains) {
+        config.domains = vm._config.xAxis.domains;
+      }
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
       /* Generate y scale */
@@ -302,6 +329,9 @@ export default function (config, helper) {
         range: [vm.chart.height, 0],
         minZero: vm._config.yAxis.minZero
       };
+      if (vm._config.yAxis.domains) {
+        config.domains = vm._config.yAxis.domains;
+      }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
