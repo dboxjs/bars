@@ -17,8 +17,8 @@ export default function (config, helper) {
       .direction('n')
       .html(vm._config.tip || function (d) {
         var html = '';
-        html += Number.isNaN(+d[vm._config.x]) ? '' : vm.utils.format(d[vm._config.x]);
-        html += Number.isNaN(+d[vm._config.y]) ? '': vm.utils.format(d[vm._config.y]);
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
         return html;
       });
   };
