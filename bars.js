@@ -17,8 +17,8 @@ export default function (config, helper) {
       .direction('n')
       .html(vm._config.tip || function (d) {
         var html = '';
-        html += Number.isNaN(+d[vm._config.x]) ? '' : vm.utils.format(d[vm._config.x]);
-        html += Number.isNaN(+d[vm._config.y]) ? '': vm.utils.format(d[vm._config.y]);
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
         return html;
       });
   };
@@ -435,7 +435,7 @@ export default function (config, helper) {
   Bars._drawGroupByXAxis = function () {
     var vm = this;
     vm._tip.html(vm._config.tip || function (d) {
-      return d.key + '<br>' + vm.utils.format(d.value);
+      return d.key + '<br>' + d.axis + '<br>' + vm.utils.format(d.value);
     });
 
     vm.chart.svg().call(vm._tip);
@@ -452,7 +452,8 @@ export default function (config, helper) {
         return vm._config.groupBy.map(function (key) {
           return {
             key: key,
-            value: d[key]
+            value: d[key],
+            axis: d[vm._config.x]
           };
         });
       })
@@ -506,7 +507,7 @@ export default function (config, helper) {
   Bars._drawGroupByYAxis = function () {
     var vm = this;
     vm._tip.html(vm._config.tip || function (d) {
-      return d.key + '<br>' + vm.utils.format(d.value);
+      return d.key + '<br>' + d.axis + '<br>' + vm.utils.format(d.value);
     });
 
     vm.chart.svg().call(vm._tip);
@@ -523,7 +524,8 @@ export default function (config, helper) {
         return vm._config.groupBy.map(function (key) {
           return {
             key: key,
-            value: d[key]
+            value: d[key],
+            axis: d[vm._config.y]
           };
         });
       })
