@@ -18,8 +18,8 @@ export default function (config, helper) {
       .direction('n')
       .html(vm._config.tip || function (d) {
         var html = '';
-        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
-        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.x === 'year' ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.y === 'year' ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
         return html;
       });
   };
@@ -436,7 +436,12 @@ export default function (config, helper) {
   Bars._drawGroupByXAxis = function () {
     var vm = this;
     vm._tip.html(vm._config.tip || function (d) {
-      return d.key + '<br>' + d.axis + '<br>' + vm.utils.format(d.value);
+      let html =  d.key + '<br>';
+      if (d.axis !== d.key) {
+        html += d.axis + '<br>';
+      }
+      html += vm.utils.format(d.value);
+      return html;
     });
 
     vm.chart.svg().call(vm._tip);
@@ -508,7 +513,12 @@ export default function (config, helper) {
   Bars._drawGroupByYAxis = function () {
     var vm = this;
     vm._tip.html(vm._config.tip || function (d) {
-      return d.key + '<br>' + d.axis + '<br>' + vm.utils.format(d.value);
+      let html = d.key + '<br>';
+      if (d.axis !== d.key) {
+        html += d.axis + '<br>';
+      }
+      html += vm.utils.format(d.value);
+      return html;
     });
 
     vm.chart.svg().call(vm._tip);
@@ -578,13 +588,14 @@ export default function (config, helper) {
   Bars._drawStackByXAxis = function () {
     var vm = this;
     vm._tip.html(vm._config.tip || function (d) {
-      var cat = '';
+      var html = '';
       for (var k in d.data) {
-        if ((d[1] - d[0]) == d.data[k]) {
-          cat = k;
+        if ((d[1] - d[0]).toFixed(12) === Number(d.data[k]).toFixed(12)) {
+          html += k + '<br>';
         }
       }
-      return cat + '<br>' + vm.utils.format(d[1] - d[0]);
+      html += d.data[vm._config.x];
+      return html + '<br>' + vm.utils.format(d[1] - d[0]);
     });
 
     vm.chart.svg().call(vm._tip);
@@ -651,13 +662,14 @@ export default function (config, helper) {
     var vm = this;
 
     vm._tip.html(vm._config.tip || function (d) {
-      var cat = '';
+      var html = '';
       for (var k in d.data) {
-        if ((d[1] - d[0]) == d.data[k]) {
-          cat = k;
+        if ((d[1] - d[0]).toFixed(12) === Number(d.data[k]).toFixed(12)) {
+          html += k + '<br>';
         }
       }
-      return cat + '<br>' + vm.utils.format(d[1] - d[0]);
+      html += d.data[vm._config.y];
+      return html + '<br>' + vm.utils.format(d[1] - d[0]);
     });
 
     vm.chart.svg().call(vm._tip);
@@ -783,12 +795,10 @@ export default function (config, helper) {
 
         if (vm._config && vm._config.bars.min !== undefined && vm._config.bars.max !== undefined) {
           if (total < vm._config.bars.min || total > vm._config.bars.max) {
-            console.log('outOfRangeColor', total, vm._config.bars.min, vm._config.bars.max);
             return vm._config.bars.quantiles.outOfRangeColor;
           }
         } else {
           if (total < vm._minMax[0] || total > vm._minMax[1]) {
-            console.log('outOfRangeColor', total, vm._config.bars.min, vm._config.bars.max);
             return vm._config.bars.quantiles.outOfRangeColor;
           }
         }
