@@ -13,7 +13,7 @@ export default function (config, helper) {
     vm._config = config ? config : {};
     vm._data = [];
     vm._scales = {};
-    vm._tip = d3.tip()
+    vm._tip = vm.utils.d3.tip()
       .attr('class', 'd3-tip')
       .direction('n')
       .html(vm._config.tip || function (d) {
