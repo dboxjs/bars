@@ -379,18 +379,26 @@ export default function (config, helper) {
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
-          value = 0;
+          if (d[vm._config.x] > 0) {
+            value = vm._scales.x(0);
+          }
         }
         return value;
       })
       .attr('y', function (d) {
-        return vm._scales.y(d[vm._config.y]);
+        var value =  vm._scales.y(d[vm._config.y]);
+        if (vm._config.yAxis.scale === 'linear') {
+          if (d[vm._config.y] < 0) { 
+            value = vm._scales.y(0);
+          }
+        }
+        return value;
       })
       .attr('width', function (d) {
-        return vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : vm._scales.x(d[vm._config.x]);
+        return vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
       })
       .attr('height', function (d) {
-        return vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : vm.chart.height - vm._scales.y(d[vm._config.y]);
+        return vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
       })
       .attr('fill', function (d) {
         return vm._scales.color !== false ? vm._scales.color(d[vm._config.fill]) : vm._getQuantileColor(d[vm._config.fill], 'default');
@@ -468,11 +476,15 @@ export default function (config, helper) {
         return vm._scales.groupBy(d.key);
       })
       .attr('y', function (d) {
-        return vm._scales.y(d.value);
+        if (d.value > 0) {
+          return vm._scales.y(d.value);
+        } else {
+          return vm._scales.y(0);
+        }
       })
       .attr('width', vm._scales.groupBy.bandwidth())
       .attr('height', function (d) {
-        return vm.chart.height - vm._scales.y(d.value);
+        return Math.abs(vm._scales.y(d.value) - vm._scales.y(0));
       })
       .attr('fill', function (d) {
         return vm._scales.color(d.key);
@@ -544,9 +556,15 @@ export default function (config, helper) {
       .attr('y', function (d) {
         return vm._scales.groupBy(d.key);
       })
-      .attr('x', 0)
+      .attr('x', function(d) {
+        if (d < 0) {
+          return vm._scales.x(d.value);
+        } else {
+          return vm._scales.x(0);
+        }
+      })
       .attr('width', function (d) {
-        return vm._scales.x(d.value);
+        return Math.abs(vm._scales.x(d.value) - vm._scales.x(0));
       })
       .attr('height', vm._scales.groupBy.bandwidth())
       .attr('fill', function (d) {
