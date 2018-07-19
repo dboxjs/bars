@@ -1,4 +1,6 @@
 import * as d3 from 'd3';
+import * as _ from 'lodash';
+
 /*
  * Simple Bar chart
  */
@@ -163,7 +165,7 @@ export default function (config, helper) {
     return vm;
   };
 
-  Bars.scales = function (scales) {
+  Bars.scales = function () {
     var vm = this;
     var config;
     //vm._scales = scales;
@@ -637,7 +639,7 @@ export default function (config, helper) {
       .attr('x', function (d) {
         return vm._scales.x(d.data[vm._config.x]);
       })
-      .attr('width', function (d) {
+      .attr('width', function () {
         return vm._scales.x.bandwidth();
       })
       .attr('height', function (d) {
@@ -710,7 +712,7 @@ export default function (config, helper) {
       .attr('x', function (d) {
         return vm._scales.x(d[0]);
       })
-      .attr('height', function (d) {
+      .attr('height', function () {
         return vm._scales.y.bandwidth();
       })
       .attr('width', function (d) {
@@ -783,8 +785,8 @@ export default function (config, helper) {
 
       } else {
         quantile.push(d3.quantile(values, 0));
-        for (var i = 1; i <= vm._config.quantiles.buckets; i++) {
-          quantile.push(d3.quantile(values, i * 1 / vm._config.quantiles.buckets));
+        for (var j = 1; j <= vm._config.quantiles.buckets; j++) {
+          quantile.push(d3.quantile(values, j * 1 / vm._config.quantiles.buckets));
         }
       }
 
