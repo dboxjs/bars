@@ -524,41 +524,40 @@ export default function (config, helper) {
   Bars.drawGroupLabels = function () {
     var vm = this;
 
-    vm.chart.svg().selectAll('.dbox-label')
-      .data(vm._data)
-      .enter().append('text')
-      .attr('class', 'dbox-label')
-      .attr('x', function (d) {
-        var value = vm._scales.x(d[vm._config.groupBy[0]]);
-        if (vm._config.xAxis.scale == 'linear') {
-          if (d[vm._config.x] > 0) {
-            value = vm._scales.x(0);
+    var groupLabels = vm.chart.svg().selectAll('.dbox-label')
+      .data(vm._data);
+
+    vm._config.groupBy.forEach(function(group, index) {
+      groupLabels.enter().append('text')
+        .attr('class', 'dbox-label')
+        .attr('transform', function(d) {
+          if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
+            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) - 20) + ')';
           }
-        }
-        return value;
-      })
-      .attr('y', function (d) {
-        var value =  vm._scales.y(d[vm._config.groupBy[0]]);
-        if (vm._config.yAxis.scale === 'linear') {
-          if (d[vm._config.y] < 0) { 
-            value = vm._scales.y(0);
+          return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 20) + ')';
+        })
+        .text( function(d) {
+          if (!isNaN(d[vm._config.y])) {
+            return vm.utils.format(d[group]);
+          } 
+          return vm.utils.format(d[group]);
+        });
+
+      groupLabels.enter().append('text')
+        .attr('class', 'dbox-label-coefficient')
+        .attr('transform', function(d) {
+          if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
+            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group])) + ')';
           }
-        }
-        return value;
-      })
-      .attr('transform', function(d) {
-        var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
-        if (!isNaN(d[vm._config.y])) {
-          return 'translate(' + barW/2 + ', -10)';
-        } 
-        return 'translate(' + (barW + 30) + ', 33)';
-      })
-      .text( function(d) {
-        if (!isNaN(d[vm._config.y])) {
-          return vm.utils.format(d[vm._config.y]);
-        } 
-        return vm.utils.format(d[vm._config.x]);
-      });
+          return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 40 ) + ')';
+        })
+        .text( function(d) {
+          if (!isNaN(d[vm._config.y])) {
+            return vm.utils.format(d[group + 'coefficient']);
+          } 
+          return vm.utils.format(d[group + 'coefficient']);
+        });
+    });
   }
 
   Bars._drawGroupByXAxis = function () {
@@ -574,7 +573,7 @@ export default function (config, helper) {
     });
 
     vm.chart.svg().call(vm._tip);
-    console.log(vm._config);
+
     vm.chart.svg().append('g')
       .selectAll('g')
       .data(vm._data)
