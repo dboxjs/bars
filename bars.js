@@ -350,6 +350,46 @@ export default function (config, helper) {
     return vm;
   };
 
+  Bars.drawLabels = function () {
+    var vm = this;
+
+    vm.chart.svg().selectAll('.dbox-label')
+      .data(vm._data)
+      .enter().append('text')
+      .attr('class', 'dbox-label')
+      .attr('x', function (d) {
+        var value = vm._scales.x(d[vm._config.x]);
+        if (vm._config.xAxis.scale == 'linear') {
+          if (d[vm._config.x] > 0) {
+            value = vm._scales.x(0);
+          }
+        }
+        return value;
+      })
+      .attr('y', function (d) {
+        var value =  vm._scales.y(d[vm._config.y]);
+        if (vm._config.yAxis.scale === 'linear') {
+          if (d[vm._config.y] < 0) { 
+            value = vm._scales.y(0);
+          }
+        }
+        return value;
+      })
+      .attr('transform', function(d) {
+        var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+        if (!isNaN(d[vm._config.y])) {
+          return 'translate(' + barW/2 + ', -10)';
+        } 
+        return 'translate(' + (barW + 30) + ', 33)';
+      })
+      .text( function(d) {
+        if (!isNaN(d[vm._config.y])) {
+          return vm.utils.format(d[vm._config.y]);
+        } 
+        return vm.utils.format(d[vm._config.x]);
+      });
+  }
+
   Bars.draw = function () {
     var vm = this;
 
@@ -436,6 +476,8 @@ export default function (config, helper) {
           vm._config.onclick.call(this, d, i);
         }
       });
+
+      Bars.drawLabels();
 
     return vm;
   };
