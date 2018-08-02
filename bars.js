@@ -531,10 +531,14 @@ export default function (config, helper) {
       groupLabels.enter().append('text')
         .attr('class', 'dbox-label')
         .attr('transform', function(d) {
-          if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
-            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) - 20) + ')';
+          if(vm._config.x) {
+            if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
+              return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) - 20) + ')';
+            }
+            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 20) + ')';
+          } else {
+            return 'translate(' + ((vm._scales.x(d[group]) + 46)) + ',' +  ((vm._scales.y(d[vm._config.y]) + 15) + (vm._scales.groupBy.bandwidth() * index)) + ')';
           }
-          return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 20) + ')';
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
@@ -546,10 +550,14 @@ export default function (config, helper) {
       groupLabels.enter().append('text')
         .attr('class', 'dbox-label-coefficient')
         .attr('transform', function(d) {
-          if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
-            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group])) + ')';
+          if(vm._config.x) {
+            if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
+              return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group])) + ')';
+            }
+            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 40 ) + ')';
+          } else {
+            return 'translate(' + ((vm._scales.x(d[group]) + 46)) + ',' +  ((vm._scales.y(d[vm._config.y]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ')';
           }
-          return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 40 ) + ')';
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
@@ -724,6 +732,8 @@ export default function (config, helper) {
           vm._config.onclick.call(this, d, i);
         }
       });
+
+      Bars.drawGroupLabels();
   };
 
   Bars._drawStackByXAxis = function () {
