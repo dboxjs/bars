@@ -736,6 +736,37 @@ export default function (config, helper) {
       Bars.drawGroupLabels();
   };
 
+  Bars.drawStackLabels = function () {
+    var vm = this;
+
+    vm.chart.svg().selectAll('.division').each(function(dat, index) {
+      d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
+        .attr('class', 'dbox-label')
+        .attr('transform', function(d) {
+          return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+        })
+        .text( function(d) {
+          if (!isNaN(d[vm._config.y])) {
+            return vm.utils.format(d.data[dat.key]);
+          } 
+          return vm.utils.format(d.data[dat.key]);
+        });
+
+      d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
+        .attr('class', 'dbox-label-coefficient')
+        .attr('transform', function(d) {
+          return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
+        })
+        .text( function(d) {
+          if (!isNaN(d[vm._config.y])) {
+            return vm.utils.format(d.data[dat.key + 'coefficient']);
+          } 
+          return vm.utils.format(d.data[dat.key + 'coefficient']);
+        });
+    });
+
+  }
+
   Bars._drawStackByXAxis = function () {
     var vm = this;
     console.log('_drawStackByXAxis');
@@ -756,6 +787,7 @@ export default function (config, helper) {
       .selectAll('g')
       .data(vm._data)
       .enter().append('g')
+      .attr('class', 'division')
       .attr('fill', function (d) {
         return vm._scales.color(d.key);
       })
@@ -809,7 +841,7 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawLabels();
+      Bars.drawStackLabels();
   };
 
   Bars._drawStackByYAxis = function () {
@@ -883,6 +915,8 @@ export default function (config, helper) {
           vm._config.onclick.call(this, d, i);
         }
       });
+
+      Bars.drawStackLabels();
   };
 
   Bars._setQuantile = function (data) {
