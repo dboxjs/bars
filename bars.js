@@ -743,7 +743,10 @@ export default function (config, helper) {
       d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
         .attr('class', 'dbox-label')
         .attr('transform', function(d) {
-          return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+          if(vm._config.x) {
+            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+          }
+          return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 30) + ')';
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
@@ -755,7 +758,10 @@ export default function (config, helper) {
       d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
         .attr('class', 'dbox-label-coefficient')
         .attr('transform', function(d) {
-          return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
+          if(vm._config.x) {
+            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
+          }
+          return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
@@ -864,6 +870,7 @@ export default function (config, helper) {
       .selectAll('g')
       .data(vm._data)
       .enter().append('g')
+      .attr('class', 'division')
       .attr('fill', function (d) {
         return vm._scales.color(d.key);
       })
