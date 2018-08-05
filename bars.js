@@ -369,17 +369,21 @@ export default function (config, helper) {
       })
       .attr('y', function (d) {
         var value =  vm._scales.y(d[vm._config.y]);
+        var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
         if (vm._config.yAxis.scale === 'linear') {
           if (d[vm._config.y] < 0) { 
             value = vm._scales.y(0);
           }
         }
-        return value;
+        if (barH < 50) {
+          return value - 30;
+        }
+        return value + 20;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
         if (!isNaN(d[vm._config.y])) {
-          return 'translate(' + barW/2 + ', -30)';
+          return 'translate(' + barW/2 + ', 0)';
         } 
         return 'translate(' + (barW + 10) + ', 33)';
       })
@@ -403,25 +407,29 @@ export default function (config, helper) {
       })
       .attr('y', function (d) {
         var value =  vm._scales.y(d[vm._config.y]);
+        var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
         if (vm._config.yAxis.scale === 'linear') {
           if (d[vm._config.y] < 0) { 
             value = vm._scales.y(0);
           }
         }
-        return value;
+        if (barH < 50) {
+          return value - 10;
+        }
+        return value + 40;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
         if (!isNaN(d[vm._config.y])) {
-          return 'translate(' + barW/2 + ', -10)';
+          return 'translate(' + barW/2 + ', 0)';
         } 
         return 'translate(' + (barW + 30) + ', 33)';
       })
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
-          return vm.utils.format(d.coefficient);
+          return '(' + d.coefficient.toFixed(2) + ')';
         } 
-        return vm.utils.format(d.coefficient);
+        return '(' + d.coefficient.toFixed(2) + ')';
       });
   }
 
