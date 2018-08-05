@@ -385,7 +385,7 @@ export default function (config, helper) {
         if (!isNaN(d[vm._config.y])) {
           return 'translate(' + barW/2 + ', 0)';
         } 
-        return 'translate(' + (barW + 10) + ', 33)';
+        return 'translate(' + (barW + 30) + ', 0)';
       })
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
@@ -423,7 +423,7 @@ export default function (config, helper) {
         if (!isNaN(d[vm._config.y])) {
           return 'translate(' + barW/2 + ', 0)';
         } 
-        return 'translate(' + (barW + 30) + ', 33)';
+        return 'translate(' + (barW + 30) + ', 0)';
       })
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
@@ -569,9 +569,9 @@ export default function (config, helper) {
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
-            return vm.utils.format(d[group + 'coefficient']);
+            return '(' + d[group + 'coefficient'].toFixed(2) + ')';
           } 
-          return vm.utils.format(d[group + 'coefficient']);
+          return '(' + d[group + 'coefficient'].toFixed(2) + ')';
         });
     });
   }
@@ -773,9 +773,9 @@ export default function (config, helper) {
         })
         .text( function(d) {
           if (!isNaN(d[vm._config.y])) {
-            return vm.utils.format(d.data[dat.key + 'coefficient']);
+            return '(' + d.data[dat.key + 'coefficient'].toFixed(2) + ')';
           } 
-          return vm.utils.format(d.data[dat.key + 'coefficient']);
+          return '(' + d.data[dat.key + 'coefficient'].toFixed(2) + ')';
         });
     });
 
