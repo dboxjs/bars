@@ -389,9 +389,9 @@ export default function (config, helper) {
       })
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
-          return vm.utils.format(d[vm._config.y]);
-        } 
-        return vm.utils.format(d[vm._config.x]);
+          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y]) : '';
+        }
+        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x]) : '';
       });
     
     charContainer.enter().append('text')
@@ -549,10 +549,7 @@ export default function (config, helper) {
           }
         })
         .text( function(d) {
-          if (!isNaN(d[vm._config.y])) {
-            return vm.utils.format(d[group]);
-          } 
-          return vm.utils.format(d[group]);
+          return d[group] ? vm.utils.format(d[group]) : '';
         });
 
       groupLabels.enter().append('text')
@@ -568,10 +565,7 @@ export default function (config, helper) {
           }
         })
         .text( function(d) {
-          if (!isNaN(d[vm._config.y])) {
-            return '(' + d[group + 'coefficient'].toFixed(2) + ')';
-          } 
-          return '(' + d[group + 'coefficient'].toFixed(2) + ')';
+          return d[group + 'coefficient'] ? '(' + d[group + 'coefficient'].toFixed(2) + ')' : '';
         });
     });
   }
@@ -757,10 +751,7 @@ export default function (config, helper) {
           return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 30) + ')';
         })
         .text( function(d) {
-          if (!isNaN(d[vm._config.y])) {
-            return vm.utils.format(d.data[dat.key]);
-          } 
-          return vm.utils.format(d.data[dat.key]);
+          return d.data[dat.key] ? vm.utils.format(d.data[dat.key]) : '';
         });
 
       d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
@@ -772,10 +763,7 @@ export default function (config, helper) {
           return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
         })
         .text( function(d) {
-          if (!isNaN(d[vm._config.y])) {
-            return '(' + d.data[dat.key + 'coefficient'].toFixed(2) + ')';
-          } 
-          return '(' + d.data[dat.key + 'coefficient'].toFixed(2) + ')';
+          return d.data[dat.key + 'coefficient'] ? '(' + d.data[dat.key + 'coefficient'].toFixed(2) + ')' : '';
         });
     });
 
