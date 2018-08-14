@@ -426,7 +426,7 @@ export default function (config, helper) {
         return 'translate(' + (barW + 30) + ', 0)';
       })
       .text( function(d) {
-        return d.coefficient ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
+        return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
       });
   }
 
@@ -562,7 +562,7 @@ export default function (config, helper) {
           }
         })
         .text( function(d) {
-          return d[group + 'coefficient'] ? '(' + d[group + 'coefficient'].toFixed(1) + ')' : '';
+          return d[group + 'coefficient'] && !Number.isNaN(d[group + 'coefficient'])  ? '(' + d[group + 'coefficient'].toFixed(1) + ')': '';
         });
     });
   }
@@ -760,7 +760,7 @@ export default function (config, helper) {
           return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
         })
         .text( function(d) {
-          return d.data[dat.key + 'coefficient'] ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
+          return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
         });
     });
 
