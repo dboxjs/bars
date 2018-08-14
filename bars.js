@@ -426,10 +426,7 @@ export default function (config, helper) {
         return 'translate(' + (barW + 30) + ', 0)';
       })
       .text( function(d) {
-        if (!isNaN(d[vm._config.y])) {
-          return '(' + d.coefficient.toFixed(1) + ')';
-        } 
-        return '(' + d.coefficient.toFixed(1) + ')';
+        return d.coefficient ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
       });
   }
 
