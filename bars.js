@@ -529,41 +529,42 @@ export default function (config, helper) {
   Bars.drawGroupLabels = function () {
     var vm = this;
 
-    var groupLabels = vm.chart.svg().selectAll('.dbox-label')
-      .data(vm._data);
+    vm.chart.svg().selectAll('.grouped').each(function(gr) {
+      var el = this;
 
-    vm._config.groupBy.forEach(function(group, index) {
-      groupLabels.enter().append('text')
-        .attr('class', 'dbox-label')
-        .attr('transform', function(d) {
-          if(vm._config.x) {
-            if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
-              return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) - 20) + ')';
+      d3.select(this).selectAll('rect').each(function(dat, index) {
+        d3.select(el).append('text')
+          .attr('class', 'dbox-label')
+          .attr('transform', function(d) {
+            if(vm._config.x) {
+              if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
+                return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 20) + ')';
+              }
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
+            } else {
+              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + 15) + ')';
             }
-            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 20) + ')';
-          } else {
-            return 'translate(' + ((vm._scales.x(d[group]) + 46)) + ',' +  ((vm._scales.y(d[vm._config.y]) + 15) + (vm._scales.groupBy.bandwidth() * index)) + ')';
-          }
-        })
-        .text( function(d) {
-          return d[group] ? vm.utils.format(d[group], 1) : '';
-        });
+          })
+          .text( function(d) {
+            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], 1) : '';
+          });
 
-      groupLabels.enter().append('text')
-        .attr('class', 'dbox-label-coefficient')
-        .attr('transform', function(d) {
-          if(vm._config.x) {
-            if (Math.abs(vm._scales.y(d[group]) - vm._scales.y(0)) < 50) {
-              return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group])) + ')';
+        d3.select(el).append('text')
+          .attr('class', 'dbox-label-coefficient')
+          .attr('transform', function(d) {
+            if(vm._config.x) {
+              if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
+                return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]])) + ')';
+              }
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 40 ) + ')';
+            } else {
+              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ')';
             }
-            return 'translate(' + ((vm._scales.x(d[vm._config.x]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ',' + (vm._scales.y(d[group]) + 40 ) + ')';
-          } else {
-            return 'translate(' + ((vm._scales.x(d[group]) + 46)) + ',' +  ((vm._scales.y(d[vm._config.y]) + 30) + (vm._scales.groupBy.bandwidth() * index)) + ')';
-          }
-        })
-        .text( function(d) {
-          return d[group + 'coefficient'] && !Number.isNaN(d[group + 'coefficient'])  ? '(' + d[group + 'coefficient'].toFixed(1) + ')': '';
-        });
+          })
+          .text( function(d) {
+            return d[vm._config.groupBy[index] + 'coefficient'] && !Number.isNaN(d[vm._config.groupBy[index] + 'coefficient'])  ? '(' + d[vm._config.groupBy[index] + 'coefficient'].toFixed(1) + ')': '';
+          });
+      });
     });
   }
 
@@ -585,6 +586,7 @@ export default function (config, helper) {
       .selectAll('g')
       .data(vm._data)
       .enter().append('g')
+      .attr('class', 'grouped')
       .attr('transform', function (d) {
         return 'translate(' + vm._scales.x(d[vm._config.x]) + ',0)';
       })
@@ -669,6 +671,7 @@ export default function (config, helper) {
       .selectAll('g')
       .data(vm._data)
       .enter().append('g')
+      .attr('class', 'grouped')
       .attr('transform', function (d) {
         return 'translate(0,' + vm._scales.y(d[vm._config.y]) + ' )';
       })
