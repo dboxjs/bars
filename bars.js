@@ -156,7 +156,7 @@ export default function (config, helper) {
     }
 
     if (vm._config.hasOwnProperty('quantiles')) {
-      vm._quantiles = vm._setQuantile(data);
+      vm._quantiles = vm._setQuasecondntile(data);
       vm._minMax = d3.extent(data, function (d) {
         return +d[vm._config.fill];
       });
@@ -374,11 +374,13 @@ export default function (config, helper) {
           if (d[vm._config.y] < 0) { 
             value = vm._scales.y(0);
           }
+        } else if (vm._config.yAxis.scale !== 'linear') {
+          value = value + barH;
         }
-        if (barH < 50) {
+        /*if (barH < 50) {
           return value - 30;
-        }
-        return value + 20;
+        }*/
+        return value - 15;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
@@ -536,13 +538,14 @@ export default function (config, helper) {
         d3.select(el).append('text')
           .attr('class', 'dbox-label')
           .attr('transform', function(d) {
+            var barReference = vm._scales.groupBy.bandwidth();
             if(vm._config.x) {
-              if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
-                return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 20) + ')';
-              }
-              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
+              //if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + barReference/2) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 10) + ')';
+              //}
+              //return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
             } else {
-              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + 15) + ')';
+              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + barReference) + ')';
             }
           })
           .text( function(d) {
@@ -740,15 +743,18 @@ export default function (config, helper) {
 
   Bars.drawStackLabels = function () {
     var vm = this;
-
+    console.log('stack labels');
     vm.chart.svg().selectAll('.division').each(function(dat, index) {
       d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
         .attr('class', 'dbox-label')
         .attr('transform', function(d) {
+          var barReference;
           if(vm._config.x) {
-            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+            barReference = vm._scales.x.bandwidth();
+            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(d[1]) + 20) + ')';
           }
-          return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 30) + ')';
+          barReference = vm._scales.y.bandwidth();
+          return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
         })
         .text( function(d) {
           return d.data[dat.key] ? vm.utils.format(d.data[dat.key]) : '';
