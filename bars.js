@@ -20,8 +20,8 @@ export default function (config, helper) {
       .direction('n')
       .html(vm._config.tip || function (d) {
         var html = '';
-        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
-        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x]), vm._config.decimals) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y]), vm._config.decimals) + '</span></br>') : '';
         return html;
       });
   };
@@ -106,7 +106,7 @@ export default function (config, helper) {
     if (typeof format == 'function' || format instanceof Function) {
       vm.utils.format = format;
     } else {
-      vm.utils.format = d3.format(format);
+      vm.utils.format = d3.format(format, vm._config.decimals);
     }
     return vm;
   };
@@ -391,9 +391,9 @@ export default function (config, helper) {
       })
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
-          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y]) : '';
+          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], vm._config.decimals) : '';
         }
-        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x]) : '';
+        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], vm._config.decimals) : '';
       });
     
     charContainer.enter().append('text')
@@ -549,7 +549,7 @@ export default function (config, helper) {
             }
           })
           .text( function(d) {
-            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]]) : '';
+            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], vm._config.decimals) : '';
           });
 
         d3.select(el).append('text')
@@ -579,7 +579,7 @@ export default function (config, helper) {
       if (d.axis !== d.key) {
         html += d.axis + '<br>';
       }
-      html += vm.utils.format(d.value);
+      html += vm.utils.format(d.value, vm._config.decimals);
       return html;
     });
 
@@ -664,7 +664,7 @@ export default function (config, helper) {
       if (d.axis !== d.key) {
         html += d.axis + '<br>';
       }
-      html += vm.utils.format(d.value);
+      html += vm.utils.format(d.value, vm._config.decimals);
       return html;
     });
 
@@ -757,7 +757,7 @@ export default function (config, helper) {
           return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
         })
         .text( function(d) {
-          return d.data[dat.key] ? vm.utils.format(d.data[dat.key]) : '';
+          return d.data[dat.key] ? vm.utils.format(d.data[dat.key], vm._config.decimals) : '';
         });
 
       d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
@@ -786,7 +786,7 @@ export default function (config, helper) {
         }
       }
       html += d.data[vm._config.x];
-      return html + '<br>' + vm.utils.format((d[1] - d[0]));
+      return html + '<br>' + vm.utils.format((d[1] - d[0]), vm._config.decimals);
     });
 
     vm.chart.svg().call(vm._tip);
@@ -863,7 +863,7 @@ export default function (config, helper) {
         }
       }
       html += d.data[vm._config.y];
-      return html + '<br>' + vm.utils.format((d[1] - d[0]));
+      return html + '<br>' + vm.utils.format((d[1] - d[0]), vm._config.decimals);
     });
 
     vm.chart.svg().call(vm._tip);
