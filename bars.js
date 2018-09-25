@@ -20,8 +20,8 @@ export default function (config, helper) {
       .direction('n')
       .html(vm._config.tip || function (d) {
         var html = '';
-        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x]), vm._config.decimals) + '</span></br>') : '';
-        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y]), vm._config.decimals) + '</span></br>') : '';
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
         return html;
       });
   };
@@ -106,7 +106,7 @@ export default function (config, helper) {
     if (typeof format == 'function' || format instanceof Function) {
       vm.utils.format = format;
     } else {
-      vm.utils.format = d3.format(format, vm._config.decimals);
+      vm.utils.format = d3.format(format);
     }
     return vm;
   };
@@ -380,7 +380,7 @@ export default function (config, helper) {
         /*if (barH < 50) {
           return value - 30;
         }*/
-        return value - 15;
+        return value - 7;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
@@ -541,7 +541,7 @@ export default function (config, helper) {
             var barReference = vm._scales.groupBy.bandwidth();
             if(vm._config.x) {
               //if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
-              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + barReference/2) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 10) + ')';
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + barReference/2) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 7) + ')';
               //}
               //return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
             } else {
@@ -579,7 +579,7 @@ export default function (config, helper) {
       if (d.axis !== d.key) {
         html += d.axis + '<br>';
       }
-      html += vm.utils.format(d.value, vm._config.decimals);
+      html += vm.utils.format(d.value);
       return html;
     });
 
@@ -664,7 +664,7 @@ export default function (config, helper) {
       if (d.axis !== d.key) {
         html += d.axis + '<br>';
       }
-      html += vm.utils.format(d.value, vm._config.decimals);
+      html += vm.utils.format(d.value);
       return html;
     });
 
@@ -786,7 +786,7 @@ export default function (config, helper) {
         }
       }
       html += d.data[vm._config.x];
-      return html + '<br>' + vm.utils.format((d[1] - d[0]), vm._config.decimals);
+      return html + '<br>' + vm.utils.format((d[1] - d[0]));
     });
 
     vm.chart.svg().call(vm._tip);
@@ -863,7 +863,7 @@ export default function (config, helper) {
         }
       }
       html += d.data[vm._config.y];
-      return html + '<br>' + vm.utils.format((d[1] - d[0]), vm._config.decimals);
+      return html + '<br>' + vm.utils.format((d[1] - d[0]));
     });
 
     vm.chart.svg().call(vm._tip);
