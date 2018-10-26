@@ -168,7 +168,7 @@ export default function (config, helper) {
   Bars.scales = function () {
     var vm = this;
     var config;
-    //vm._scales = scales;
+    // vm._scales = scales;
     /* Use
      * vm._config.x
      * vm._config.xAxis.scale
@@ -346,6 +346,13 @@ export default function (config, helper) {
       vm._scales.color = d3.scaleOrdinal(vm._config.colors);
     else
       vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    if (vm._data && vm._data.length > 0) {
+      vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
+    }
+    if (vm._config.legend && vm._config.legend.length > 0) {
+      vm._scales.color.domain(vm._config.legend.map(d => d.name));
+    }
 
     return vm;
   };
