@@ -396,6 +396,7 @@ export default function (config, helper) {
         } 
         return 'translate(' + (barW + 30) + ', 0)';
       })
+      .attr('text-anchor', 'middle')
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
           return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], vm._config.decimals) : '';
