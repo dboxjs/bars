@@ -439,7 +439,7 @@ export default function (config, helper) {
       .text( function(d) {
         return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
       });
-  }
+  };
 
   Bars.draw = function () {
     var vm = this;
@@ -528,7 +528,7 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawLabels();
+    Bars.drawLabels();
 
     return vm;
   };
@@ -540,7 +540,7 @@ export default function (config, helper) {
   Bars.drawGroupLabels = function () {
     var vm = this;
 
-    vm.chart.svg().selectAll('.grouped').each(function(gr) {
+    vm.chart.svg().selectAll('.grouped').each(function() { //gr) {
       var el = this;
 
       d3.select(this).selectAll('rect').each(function(dat, index) {
@@ -580,11 +580,10 @@ export default function (config, helper) {
           });
       });
     });
-  }
+  };
 
   Bars._drawGroupByXAxis = function () {
     var vm = this;
-    console.log('_drawGroupByXAxis');
     vm._tip.html(vm._config.tip || function (d) {
       let html =  d.key + '<br>';
       if (d.axis !== d.key) {
@@ -664,12 +663,11 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawGroupLabels();
+    Bars.drawGroupLabels();
   };
 
   Bars._drawGroupByYAxis = function () {
     var vm = this;
-    console.log('_drawGroupByYAxis');
     vm._tip.html(vm._config.tip || function (d) {
       let html = d.key + '<br>';
       if (d.axis !== d.key) {
@@ -749,13 +747,12 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawGroupLabels();
+    Bars.drawGroupLabels();
   };
 
   Bars.drawStackLabels = function () {
     var vm = this;
-    console.log('stack labels');
-    vm.chart.svg().selectAll('.division').each(function(dat, index) {
+    vm.chart.svg().selectAll('.division').each(function(dat) { // }, index) {
       d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
         .attr('class', 'dbox-label')
         .attr('transform', function(d) {
@@ -785,12 +782,10 @@ export default function (config, helper) {
           return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
         });
     });
-
-  }
+  };
 
   Bars._drawStackByXAxis = function () {
     var vm = this;
-    console.log('_drawStackByXAxis');
     vm._tip.html(vm._config.tip || function (d) {
       var html = '';
       for (var k in d.data) {
@@ -862,12 +857,11 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawStackLabels();
+    Bars.drawStackLabels();
   };
 
   Bars._drawStackByYAxis = function () {
     var vm = this;
-    console.log('_drawStackByYAxis');
     vm._tip.html(vm._config.tip || function (d) {
       var html = '';
       for (var k in d.data) {
@@ -938,7 +932,7 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawStackLabels();
+    Bars.drawStackLabels();
   };
 
   Bars._setQuantile = function (data) {
