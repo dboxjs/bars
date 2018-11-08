@@ -767,6 +767,7 @@ export default function (config, helper) {
           barReference = vm._scales.y.bandwidth();
           return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
         })
+        .attr('text-anchor', 'middle')
         .text( function(d) {
           return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
         });
@@ -779,11 +780,11 @@ export default function (config, helper) {
           }
           return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
         })
+        .attr('text-anchor', 'middle')
         .text( function(d) {
           return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
         });
     });
-
   };
 
   /**
