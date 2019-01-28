@@ -168,7 +168,7 @@ export default function (config, helper) {
   Bars.scales = function () {
     var vm = this;
     var config;
-    //vm._scales = scales;
+    // vm._scales = scales;
     /* Use
      * vm._config.x
      * vm._config.xAxis.scale
@@ -347,6 +347,13 @@ export default function (config, helper) {
     else
       vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
 
+    if (vm._data && vm._data.length > 0) {
+      vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
+    }
+    if (vm._config.legend && vm._config.legend.length > 0) {
+      vm._scales.color.domain(vm._config.legend.map(d => d.name));
+    }
+
     return vm;
   };
 
@@ -389,11 +396,12 @@ export default function (config, helper) {
         } 
         return 'translate(' + (barW + 30) + ', 0)';
       })
+      .attr('text-anchor', 'middle')
       .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
-          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], vm._config.decimals) : '';
+          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], true, vm._config.decimals) : '';
         }
-        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], vm._config.decimals) : '';
+        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], true, vm._config.decimals) : '';
       });
     
     charContainer.enter().append('text')
@@ -427,10 +435,11 @@ export default function (config, helper) {
         } 
         return 'translate(' + (barW + 30) + ', 0)';
       })
+      .attr('text-anchor', 'middle')
       .text( function(d) {
         return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
       });
-  }
+  };
 
   Bars.draw = function () {
     var vm = this;
@@ -519,7 +528,7 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawLabels();
+    Bars.drawLabels();
 
     return vm;
   };
@@ -531,7 +540,7 @@ export default function (config, helper) {
   Bars.drawGroupLabels = function () {
     var vm = this;
 
-    vm.chart.svg().selectAll('.grouped').each(function(gr) {
+    vm.chart.svg().selectAll('.grouped').each(function() {
       var el = this;
 
       d3.select(this).selectAll('rect').each(function(dat, index) {
@@ -548,8 +557,9 @@ export default function (config, helper) {
               return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + barReference) + ')';
             }
           })
+          .attr('text-anchor', 'middle')
           .text( function(d) {
-            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], vm._config.decimals) : '';
+            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], true, vm._config.decimals) : '';
           });
 
         d3.select(el).append('text')
@@ -564,16 +574,16 @@ export default function (config, helper) {
               return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ')';
             }
           })
+          .attr('text-anchor', 'middle')
           .text( function(d) {
             return d[vm._config.groupBy[index] + 'coefficient'] && !Number.isNaN(d[vm._config.groupBy[index] + 'coefficient'])  ? '(' + d[vm._config.groupBy[index] + 'coefficient'].toFixed(1) + ')': '';
           });
       });
     });
-  }
+  };
 
   Bars._drawGroupByXAxis = function () {
     var vm = this;
-    console.log('_drawGroupByXAxis');
     vm._tip.html(vm._config.tip || function (d) {
       let html =  d.key + '<br>';
       if (d.axis !== d.key) {
@@ -653,12 +663,11 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawGroupLabels();
+    Bars.drawGroupLabels();
   };
 
   Bars._drawGroupByYAxis = function () {
     var vm = this;
-    console.log('_drawGroupByYAxis');
     vm._tip.html(vm._config.tip || function (d) {
       let html = d.key + '<br>';
       if (d.axis !== d.key) {
@@ -738,13 +747,15 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawGroupLabels();
+    Bars.drawGroupLabels();
   };
 
+  /**
+   * Draw Stack Labels
+   */
   Bars.drawStackLabels = function () {
     var vm = this;
-    console.log('stack labels');
-    vm.chart.svg().selectAll('.division').each(function(dat, index) {
+    vm.chart.svg().selectAll('.division').each(function(dat) {
       d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
         .attr('class', 'dbox-label')
         .attr('transform', function(d) {
@@ -756,8 +767,9 @@ export default function (config, helper) {
           barReference = vm._scales.y.bandwidth();
           return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
         })
+        .attr('text-anchor', 'middle')
         .text( function(d) {
-          return d.data[dat.key] ? vm.utils.format(d.data[dat.key], vm._config.decimals) : '';
+          return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
         });
 
       d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
@@ -768,16 +780,18 @@ export default function (config, helper) {
           }
           return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
         })
+        .attr('text-anchor', 'middle')
         .text( function(d) {
           return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
         });
     });
+  };
 
-  }
-
+  /**
+   * Draw bars stacked by x axis
+   */
   Bars._drawStackByXAxis = function () {
     var vm = this;
-    console.log('_drawStackByXAxis');
     vm._tip.html(vm._config.tip || function (d) {
       var html = '';
       for (var k in d.data) {
@@ -849,12 +863,14 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawStackLabels();
+    Bars.drawStackLabels();
   };
 
+  /**
+   * Draw bars stacked by y axis
+   */
   Bars._drawStackByYAxis = function () {
     var vm = this;
-    console.log('_drawStackByYAxis');
     vm._tip.html(vm._config.tip || function (d) {
       var html = '';
       for (var k in d.data) {
@@ -925,7 +941,7 @@ export default function (config, helper) {
         }
       });
 
-      Bars.drawStackLabels();
+    Bars.drawStackLabels();
   };
 
   Bars._setQuantile = function (data) {
