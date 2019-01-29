@@ -405,7 +405,7 @@ export default function (config, helper) {
       });
     
     charContainer.enter().append('text')
-      .attr('class', 'dbox-label-bars-coefficient')
+      .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
@@ -563,7 +563,7 @@ export default function (config, helper) {
           });
 
         d3.select(el).append('text')
-          .attr('class', 'dbox-label-bars-coefficient')
+          .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
           .attr('transform', function(d) {
             if(vm._config.x) {
               if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
@@ -772,8 +772,8 @@ export default function (config, helper) {
           return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
         });
 
-      d3.select(this).selectAll('.dbox-label-bars-coefficient').data(dat).enter().append('text')
-        .attr('class', 'dbox-label-bars-coefficient')
+      d3.select(this).selectAll('.dbox-label-coefficient.dbox-label-bars-coefficient').data(dat).enter().append('text')
+        .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
         .attr('transform', function(d) {
           if(vm._config.x) {
             return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
