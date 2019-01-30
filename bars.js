@@ -443,7 +443,6 @@ export default function (config, helper) {
 
   Bars.draw = function () {
     var vm = this;
-
     if (vm._config.hasOwnProperty('groupBy')) {
       if (vm._config.hasOwnProperty('x')) vm._drawGroupByXAxis();
       if (vm._config.hasOwnProperty('y')) vm._drawGroupByYAxis();
@@ -746,7 +745,6 @@ export default function (config, helper) {
           vm._config.onclick.call(this, d, i);
         }
       });
-
     Bars.drawGroupLabels();
   };
 
@@ -756,34 +754,53 @@ export default function (config, helper) {
   Bars.drawStackLabels = function () {
     var vm = this;
     vm.chart.svg().selectAll('.division').each(function(dat) {
-      d3.select(this).selectAll('.dbox-label-bars').data(dat).enter().append('text')
-        .attr('class', 'dbox-label-bars')
-        .attr('transform', function(d) {
-          var barReference;
-          if(vm._config.x) {
-            barReference = vm._scales.x.bandwidth();
-            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+      // Get rect height to condition label drawing
+      //console.log(d3.select(this).selectAll('rect').nodes());
+      /* console.log(d3.select(this)
+        .selectAll('rect')
+        .nodes()
+        .map(function(d) { return d; })); */
+      let stacks = d3.select(this)
+      .selectAll('rect')
+      .nodes()
+      .map(function(d) { return d; });
+      console.log(stacks)
+      stacks.forEach((rect) => {
+        let rectH = rect.getBBox().height;
+        console.log(rectH);
+        if(rectH > 35) {
+          d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
+            .attr('class', 'dbox-label')
+            .attr('transform', function(d) {
+              var barReference;
+              if(vm._config.x) {
+                barReference = vm._scales.x.bandwidth();
+                return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+              }
+              barReference = vm._scales.y.bandwidth();
+              return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
+            })
+            .attr('text-anchor', 'middle')
+            .text( function(d) {
+              return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
+            });
+            
+          d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
+            .attr('class', 'dbox-label-coefficient')
+            .attr('transform', function(d) {
+              if(vm._config.x) {
+                return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
+              }
+              return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
+            })
+            .attr('text-anchor', 'middle')
+            .text( function(d) {
+              return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
+            });
+          } else {
+            console.log("No entré :(");
           }
-          barReference = vm._scales.y.bandwidth();
-          return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
-        })
-        .attr('text-anchor', 'middle')
-        .text( function(d) {
-          return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
-        });
-
-      d3.select(this).selectAll('.dbox-label-bars-coefficient').data(dat).enter().append('text')
-        .attr('class', 'dbox-label-bars-coefficient')
-        .attr('transform', function(d) {
-          if(vm._config.x) {
-            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
-          }
-          return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
-        })
-        .attr('text-anchor', 'middle')
-        .text( function(d) {
-          return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
-        });
+      });
     });
   };
 
@@ -862,7 +879,6 @@ export default function (config, helper) {
           vm._config.onclick.call(this, d, i);
         }
       });
-
     Bars.drawStackLabels();
   };
 
