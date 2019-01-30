@@ -424,9 +424,9 @@ export default function (config, helper) {
           }
         }
         if (barH < 50) {
-          return value - 10;
+          return value - 32;
         }
-        return value + 40;
+        return value + 35;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
