@@ -360,11 +360,11 @@ export default function (config, helper) {
   Bars.drawLabels = function () {
     var vm = this;
 
-    var charContainer = vm.chart.svg().selectAll('.dbox-label-bars')
+    var charContainer = vm.chart.svg().selectAll('.dbox-label')
       .data(vm._data);
 
     charContainer.enter().append('text')
-      .attr('class', 'dbox-label-bars')
+      .attr('class', 'stroke dbox-label')
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
@@ -405,7 +405,48 @@ export default function (config, helper) {
       });
     
     charContainer.enter().append('text')
-      .attr('class', 'dbox-label-bars-coefficient')
+      .attr('class', 'no-stroke dbox-label')
+      .attr('x', function (d) {
+        var value = vm._scales.x(d[vm._config.x]);
+        if (vm._config.xAxis.scale == 'linear') {
+          if (d[vm._config.x] > 0) {
+            value = vm._scales.x(0);
+          }
+        }
+        return value;
+      })
+      .attr('y', function (d) {
+        var value =  vm._scales.y(d[vm._config.y]);
+        var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
+        if (vm._config.yAxis.scale === 'linear') {
+          if (d[vm._config.y] < 0) { 
+            value = vm._scales.y(0);
+          }
+        } else if (vm._config.yAxis.scale !== 'linear') {
+          value = value + barH;
+        }
+        /*if (barH < 50) {
+          return value - 30;
+        }*/
+        return value - 7;
+      })
+      .attr('transform', function(d) {
+        var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+        if (!isNaN(d[vm._config.y])) {
+          return 'translate(' + barW/2 + ', 0)';
+        } 
+        return 'translate(' + (barW + 30) + ', 0)';
+      })
+      .attr('text-anchor', 'middle')
+      .text( function(d) {
+        if (!isNaN(d[vm._config.y])) {
+          return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], true, vm._config.decimals) : '';
+        }
+        return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], true, vm._config.decimals) : '';
+      });
+    
+    charContainer.enter().append('text')
+      .attr('class', 'dbox-label-coefficient')
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
@@ -544,7 +585,7 @@ export default function (config, helper) {
 
       d3.select(this).selectAll('rect').each(function(dat, index) {
         d3.select(el).append('text')
-          .attr('class', 'dbox-label-bars')
+          .attr('class', 'dbox-label')
           .attr('transform', function(d) {
             var barReference = vm._scales.groupBy.bandwidth();
             if(vm._config.x) {
@@ -562,7 +603,7 @@ export default function (config, helper) {
           });
 
         d3.select(el).append('text')
-          .attr('class', 'dbox-label-bars-coefficient')
+          .attr('class', 'dbox-label-coefficient')
           .attr('transform', function(d) {
             if(vm._config.x) {
               if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
@@ -753,54 +794,37 @@ export default function (config, helper) {
    */
   Bars.drawStackLabels = function () {
     var vm = this;
-    vm.chart.svg().selectAll('.division').each(function(dat) {
+    var groups = vm.chart.svg().selectAll('.division');
+    let index = 0;
+    groups.each(function(data) {
+      var stacks = d3.select(this).selectAll('rect').nodes();
       // Get rect height to condition label drawing
-      //console.log(d3.select(this).selectAll('rect').nodes());
-      /* console.log(d3.select(this)
-        .selectAll('rect')
-        .nodes()
-        .map(function(d) { return d; })); */
-      let stacks = d3.select(this)
-      .selectAll('rect')
-      .nodes()
-      .map(function(d) { return d; });
-      console.log(stacks)
-      stacks.forEach((rect) => {
-        let rectH = rect.getBBox().height;
-        console.log(rectH);
+      data.forEach((d) => {
+        var el = this;
+        var dat = d;
+        var rect = stacks[index];
+        index++;
+        var rectH = rect.getBBox().height;
+        //var rectW = rect.getBBox().width;
         if(rectH > 35) {
-          d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
+          d3.select(el).append('text')
             .attr('class', 'dbox-label')
-            .attr('transform', function(d) {
+            .attr('text-anchor', 'middle')
+            .attr('transform', function() {
               var barReference;
               if(vm._config.x) {
                 barReference = vm._scales.x.bandwidth();
-                return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+                return 'translate(' + (vm._scales.x(dat.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(dat[1]) + 20) + ')';
               }
               barReference = vm._scales.y.bandwidth();
-              return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
+              return 'translate(' + (vm._scales.x(dat.data[1]) - 30) + ',' + (vm._scales.y(dat.data[vm._config.y]) + barReference/2) + ')';
             })
-            .attr('text-anchor', 'middle')
-            .text( function(d) {
-              return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
+            .text(function() {
+              return data.key ? vm.utils.format(data.key, true, vm._config.decimals) : '';
             });
-            
-          d3.select(this).selectAll('.dbox-label-coefficient').data(dat).enter().append('text')
-            .attr('class', 'dbox-label-coefficient')
-            .attr('transform', function(d) {
-              if(vm._config.x) {
-                return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
-              }
-              return 'translate(' + (vm._scales.x(d[1]) - 60) + ',' + (vm._scales.y(d.data[vm._config.y]) + 50) + ')';
-            })
-            .attr('text-anchor', 'middle')
-            .text( function(d) {
-              return d.data[dat.key + 'coefficient'] && !Number.isNaN(d.data[dat.key + 'coefficient']) ? '(' + d.data[dat.key + 'coefficient'].toFixed(1) + ')' : '';
-            });
-          } else {
-            console.log("No entré :(");
           }
       });
+      index = 0;
     });
   };
 
