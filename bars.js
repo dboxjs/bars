@@ -364,7 +364,7 @@ export default function (config, helper) {
       .data(vm._data);
 
     charContainer.enter().append('text')
-      .attr('class', 'stroke dbox-label')
+      .attr('class', 'dbox-label')
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
