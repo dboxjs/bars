@@ -360,11 +360,19 @@ export default function (config, helper) {
   Bars.drawLabels = function () {
     var vm = this;
 
+<<<<<<< HEAD
     var charContainer = vm.chart.svg().selectAll('.dbox-label')
       .data(vm._data);
 
     charContainer.enter().append('text')
       .attr('class', 'stroke dbox-label')
+=======
+    var charContainer = vm.chart.svg().selectAll('.dbox-label.dbox-label-bars')
+      .data(vm._data);
+
+    charContainer.enter().append('text')
+      .attr('class', 'dbox-label dbox-label-bars')
+>>>>>>> dev
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
@@ -405,6 +413,7 @@ export default function (config, helper) {
       });
     
     charContainer.enter().append('text')
+<<<<<<< HEAD
       .attr('class', 'no-stroke dbox-label')
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
@@ -447,6 +456,9 @@ export default function (config, helper) {
     
     charContainer.enter().append('text')
       .attr('class', 'dbox-label-coefficient')
+=======
+      .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
+>>>>>>> dev
       .attr('x', function (d) {
         var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
@@ -465,9 +477,9 @@ export default function (config, helper) {
           }
         }
         if (barH < 50) {
-          return value - 10;
+          return value - 32;
         }
-        return value + 40;
+        return value + 35;
       })
       .attr('transform', function(d) {
         var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
@@ -585,7 +597,11 @@ export default function (config, helper) {
 
       d3.select(this).selectAll('rect').each(function(dat, index) {
         d3.select(el).append('text')
+<<<<<<< HEAD
           .attr('class', 'dbox-label')
+=======
+          .attr('class', 'dbox-label dbox-label-bars')
+>>>>>>> dev
           .attr('transform', function(d) {
             var barReference = vm._scales.groupBy.bandwidth();
             if(vm._config.x) {
@@ -603,7 +619,11 @@ export default function (config, helper) {
           });
 
         d3.select(el).append('text')
+<<<<<<< HEAD
           .attr('class', 'dbox-label-coefficient')
+=======
+          .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
+>>>>>>> dev
           .attr('transform', function(d) {
             if(vm._config.x) {
               if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
@@ -794,6 +814,7 @@ export default function (config, helper) {
    */
   Bars.drawStackLabels = function () {
     var vm = this;
+<<<<<<< HEAD
     var groups = vm.chart.svg().selectAll('.division');
     let index = 0;
     groups.each(function(data) {
@@ -822,6 +843,30 @@ export default function (config, helper) {
             .text(function() {
               return dat.data[data.key] ? vm.utils.format(dat.data[data.key], true, vm._config.decimals) : '';
             });
+=======
+    vm.chart.svg().selectAll('.division').each(function(dat) {
+      d3.select(this).selectAll('.dbox-label').data(dat).enter().append('text')
+        .attr('class', 'dbox-label')
+        .attr('transform', function(d) {
+          var barReference;
+          if(vm._config.x) {
+            barReference = vm._scales.x.bandwidth();
+            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(d[1]) + 20) + ')';
+          }
+          barReference = vm._scales.y.bandwidth();
+          return 'translate(' + (vm._scales.x(d[1]) - 30) + ',' + (vm._scales.y(d.data[vm._config.y]) + barReference/2) + ')';
+        })
+        .attr('text-anchor', 'middle')
+        .text( function(d) {
+          return d.data[dat.key] ? vm.utils.format(d.data[dat.key], true, vm._config.decimals) : '';
+        });
+
+      d3.select(this).selectAll('.dbox-label-coefficient.dbox-label-bars-coefficient').data(dat).enter().append('text')
+        .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
+        .attr('transform', function(d) {
+          if(vm._config.x) {
+            return 'translate(' + (vm._scales.x(d.data[vm._config.x]) + 50) + ',' + (vm._scales.y(d[1]) + 40) + ')';
+>>>>>>> dev
           }
       });
       index = 0;
