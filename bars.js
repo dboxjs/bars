@@ -820,7 +820,7 @@ export default function (config, helper) {
               return 'translate(' + (vm._scales.x(dat.data[1]) - 30) + ',' + (vm._scales.y(dat.data[vm._config.y]) + barReference/2) + ')';
             })
             .text(function() {
-              return data.key ? vm.utils.format(data.key, true, vm._config.decimals) : '';
+              return dat.data[data.key] ? vm.utils.format(dat.data[data.key], true, vm._config.decimals) : '';
             });
           }
       });
