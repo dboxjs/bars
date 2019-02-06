@@ -436,9 +436,9 @@ export default function (config, helper) {
         return 'translate(' + (barW + 30) + ', 0)';
       })
       .attr('text-anchor', 'middle')
-      .text( function(d) {
-        return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
-      });
+      // .text( function(d) {
+      //   return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
+      // });
   };
 
   Bars.draw = function () {
