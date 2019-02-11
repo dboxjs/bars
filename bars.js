@@ -384,9 +384,9 @@ export default function (config, helper) {
         } else if (vm._config.yAxis.scale !== 'linear') {
           value = value + barH;
         }
-        /*if (barH < 50) {
-          return value - 30;
-        }*/
+        // if (barH < 50) {
+        //   return value - 30;
+        // }
         return value - 7;
       })
       .attr('transform', function(d) {
@@ -404,41 +404,41 @@ export default function (config, helper) {
         return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], true, vm._config.decimals) : '';
       });
     
-    charContainer.enter().append('text')
-      .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
-      .attr('x', function (d) {
-        var value = vm._scales.x(d[vm._config.x]);
-        if (vm._config.xAxis.scale == 'linear') {
-          if (d[vm._config.x] > 0) {
-            value = vm._scales.x(0);
-          }
-        }
-        return value;
-      })
-      .attr('y', function (d) {
-        var value =  vm._scales.y(d[vm._config.y]);
-        var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
-        if (vm._config.yAxis.scale === 'linear') {
-          if (d[vm._config.y] < 0) { 
-            value = vm._scales.y(0);
-          }
-        }
-        if (barH < 50) {
-          return value - 32;
-        }
-        return value + 35;
-      })
-      .attr('transform', function(d) {
-        var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
-        if (!isNaN(d[vm._config.y])) {
-          return 'translate(' + barW/2 + ', 0)';
-        } 
-        return 'translate(' + (barW + 30) + ', 0)';
-      })
-      .attr('text-anchor', 'middle')
-      // .text( function(d) {
-      //   return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
-      // });
+    // charContainer.enter().append('text')
+    //   .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
+    //   .attr('x', function (d) {
+    //     var value = vm._scales.x(d[vm._config.x]);
+    //     if (vm._config.xAxis.scale == 'linear') {
+    //       if (d[vm._config.x] > 0) {
+    //         value = vm._scales.x(0);
+    //       }
+    //     }
+    //     return value;
+    //   })
+    //   .attr('y', function (d) {
+    //     var value =  vm._scales.y(d[vm._config.y]);
+    //     var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
+    //     if (vm._config.yAxis.scale === 'linear') {
+    //       if (d[vm._config.y] < 0) { 
+    //         value = vm._scales.y(0);
+    //       }
+    //     }
+    //     // if (barH < 50) {
+    //     //   return value - 32;
+    //     // }
+    //     return value + 35;
+    //   })
+    //   .attr('transform', function(d) {
+    //     var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+    //     if (!isNaN(d[vm._config.y])) {
+    //       return 'translate(' + barW/2 + ', 0)';
+    //     } 
+    //     return 'translate(' + (barW + 30) + ', 0)';
+    //   })
+    //   .attr('text-anchor', 'middle')
+    //   .text( function(d) {
+    //     return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
+    //   });
   };
 
   Bars.draw = function () {
