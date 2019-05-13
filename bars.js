@@ -88,7 +88,6 @@ export default function (config, helper) {
     } else {
       // Using a preconfigured d3.scale
       vm._scales.color = colors;
-      debugger
     }
     return vm;
   };
