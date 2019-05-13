@@ -171,7 +171,12 @@ export default function (config, helper) {
      * vm._data
      */
     // Normal bars
-    if (vm._config.hasOwnProperty('x') && vm._config.hasOwnProperty('y')) {
+    if (vm._config.hasOwnProperty('x') && 
+        vm._config.hasOwnProperty('y') && 
+        vm._config.hasOwnProperty('xAxis') && 
+        vm._config.hasOwnProperty('yAxis') && 
+        vm.chart.hasOwnProperty('width') && 
+        vm.chart.hasOwnProperty('height')) {
       config = {
         column: vm._config.x,
         type: vm._config.xAxis.scale,
@@ -196,7 +201,12 @@ export default function (config, helper) {
     }
 
     // GroupBy bars on the xAxis
-    if (vm._config.hasOwnProperty('x') && vm._config.hasOwnProperty('groupBy')) {
+    if (vm._config.hasOwnProperty('x') && 
+        vm._config.hasOwnProperty('groupBy') &&
+        vm._config.hasOwnProperty('xAxis') && 
+        vm._config.hasOwnProperty('yAxis') && 
+        vm.chart.hasOwnProperty('width') && 
+        vm.chart.hasOwnProperty('height')) {
       /* Generate x scale */
       config = {
         column: vm._config.x,
@@ -235,7 +245,12 @@ export default function (config, helper) {
     }
 
     // GroupBy bars on the yAxis
-    if (vm._config.hasOwnProperty('y') && vm._config.hasOwnProperty('groupBy')) {
+    if (vm._config.hasOwnProperty('y') && 
+        vm._config.hasOwnProperty('groupBy') &&
+        vm._config.hasOwnProperty('xAxis') && 
+        vm._config.hasOwnProperty('yAxis') && 
+        vm.chart.hasOwnProperty('width') && 
+        vm.chart.hasOwnProperty('height')) {
       /* Generate y scale */
       config = {
         column: vm._config.y,
@@ -335,7 +350,6 @@ export default function (config, helper) {
 
     // vm.chart.scales.x = vm._scales.x;
     // vm.chart.scales.y = vm._scales.y;
-    console.log(vm._scales.color.domain().length);
     if(vm._scales.color && vm._scales.color.domain().length === 0) {
       if (vm._config.hasOwnProperty('colors')) { 
         vm._scales.color = d3.scaleOrdinal(vm._config.colors); 
@@ -400,42 +414,6 @@ export default function (config, helper) {
         }
         return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], true, vm._config.decimals) : '';
       });
-
-    // charContainer.enter().append('text')
-    //   .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
-    //   .attr('x', function (d) {
-    //     var value = vm._scales.x(d[vm._config.x]);
-    //     if (vm._config.xAxis.scale == 'linear') {
-    //       if (d[vm._config.x] > 0) {
-    //         value = vm._scales.x(0);
-    //       }
-    //     }
-    //     return value;
-    //   })
-    //   .attr('y', function (d) {
-    //     var value =  vm._scales.y(d[vm._config.y]);
-    //     var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
-    //     if (vm._config.yAxis.scale === 'linear') {
-    //       if (d[vm._config.y] < 0) {
-    //         value = vm._scales.y(0);
-    //       }
-    //     }
-    //     // if (barH < 50) {
-    //     //   return value - 32;
-    //     // }
-    //     return value + 35;
-    //   })
-    //   .attr('transform', function(d) {
-    //     var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
-    //     if (!isNaN(d[vm._config.y])) {
-    //       return 'translate(' + barW/2 + ', 0)';
-    //     }
-    //     return 'translate(' + (barW + 30) + ', 0)';
-    //   })
-    //   .attr('text-anchor', 'middle')
-    //   .text( function(d) {
-    //     return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
-    //   });
   };
 
   Bars.draw = function () {
@@ -537,10 +515,7 @@ export default function (config, helper) {
           .attr('transform', (d) => {
             const barReference = vm._scales.groupBy.bandwidth();
             if (vm._config.x) {
-              // if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
               return `translate(${vm._scales.groupBy(vm._config.groupBy[index]) + barReference / 2},${vm._scales.y(d[vm._config.groupBy[index]]) - 7})`;
-              // }
-              // return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
             }
             return `translate(${vm._scales.x(d[vm._config.groupBy[index]]) + 26},${vm._scales.groupBy(vm._config.groupBy[index]) + barReference})`;
           })
