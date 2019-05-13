@@ -88,6 +88,7 @@ export default function (config, helper) {
     } else {
       // Using a preconfigured d3.scale
       vm._scales.color = colors;
+      debugger
     }
     return vm;
   };
@@ -334,7 +335,8 @@ export default function (config, helper) {
 
     // vm.chart.scales.x = vm._scales.x;
     // vm.chart.scales.y = vm._scales.y;
-    if(!vm._scales.color.domain) {
+    console.log(vm._scales.color.domain().length);
+    if(vm._scales.color && vm._scales.color.domain().length === 0) {
       if (vm._config.hasOwnProperty('colors')) { 
         vm._scales.color = d3.scaleOrdinal(vm._config.colors); 
       } else { 
