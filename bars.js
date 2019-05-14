@@ -5,105 +5,105 @@ import * as _ from 'lodash';
  * Simple Bar chart
  */
 export default function (config, helper) {
-  // Link Bars to the helper object in helper.js
-  const Bars = Object.create(helper);
+
+  //Link Bars to the helper object in helper.js
+  var Bars = Object.create(helper);
 
   Bars.init = function (config) {
-    const vm = this;
+    var vm = this;
 
-    vm._config = config || {};
+    vm._config = config ? config : {};
     vm._data = [];
     vm._scales = {};
     vm._tip = vm.utils.d3.tip()
       .attr('class', 'd3-tip')
       .direction('n')
-      .html(vm._config.tip || ((d) => {
-        let html = '';
-        html += d[vm._config.x] ? (`<span>${Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x])}</span></br>`) : '';
-        html += d[vm._config.y] ? (`<span>${Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y])}</span></br>`) : '';
+      .html(vm._config.tip || function (d) {
+        var html = '';
+        html += d[vm._config.x] ? ('<span>' + (Number.isNaN(+d[vm._config.x]) || vm._config.xAxis.scale === 'band' ? d[vm._config.x] : vm.utils.format(d[vm._config.x])) + '</span></br>') : '';
+        html += d[vm._config.y] ? ('<span>' + (Number.isNaN(+d[vm._config.y]) || vm._config.yAxis.scale === 'band' ? d[vm._config.y] : vm.utils.format(d[vm._config.y])) + '</span></br>') : '';
         return html;
-      }));
+      });
   };
 
 
   //-------------------------------
-  // User config functions
+  //User config functions
   Bars.id = function (columnName) {
-    const vm = this;
+    var vm = this;
     vm._config.id = columnName;
     return vm;
   };
 
   Bars.x = function (columnName) {
-    const vm = this;
+    var vm = this;
     vm._config.x = columnName;
     return vm;
   };
 
   Bars.y = function (columnName) {
-    const vm = this;
+    var vm = this;
     vm._config.y = columnName;
     return vm;
   };
 
   /**
    * Used to draw a bar chart with multiple bars per group
-   * @param {array} columns
+   * @param {array} columns 
    */
   Bars.groupBy = function (columns) {
-    const vm = this;
+    var vm = this;
     vm._config.groupBy = columns;
     return vm;
   };
 
   /**
    * Used to draw a bar chart stacked with multiple bars per group
-   * @param {array} columns
+   * @param {array} columns 
    */
   Bars.stackBy = function (columnName) {
-    const vm = this;
+    var vm = this;
     vm._config.stackBy = columnName;
     return vm;
   };
 
   /**
    * column name used for the domain values
-   * @param {string} columnName
+   * @param {string} columnName 
    */
   Bars.fill = function (columnName) {
-    const vm = this;
+    var vm = this;
     vm._config.fill = columnName;
     return vm;
   };
 
   /**
-   * array of values used
-   * @param {array or scale} columnName
+   * array of values used 
+   * @param {array or scale} columnName 
    */
   Bars.colors = function (colors) {
-    const vm = this;
+    var vm = this;
     if (Array.isArray(colors)) {
-      // Using an array of colors for the range
+      //Using an array of colors for the range 
       vm._config.colors = colors;
     } else {
-      // Using a preconfigured d3.scale
+      //Using a preconfigured d3.scale
       vm._scales.color = colors;
-      debugger
     }
     return vm;
   };
 
   Bars.sortBy = function (option) {
-    // option = string [asc,desc]
-    // option = array for groupBy and stackBy
-    const vm = this;
+    //option = string [asc,desc] 
+    //option = array for groupBy and stackBy
+    var vm = this;
     vm._config.sortBy = option;
     return vm;
   };
 
   Bars.format = function (format) {
-    const vm = this;
-    if (typeof format === 'function' || format instanceof Function) {
+    var vm = this;
+    if (typeof format == 'function' || format instanceof Function) {
       vm.utils.format = format;
     } else {
       vm.utils.format = d3.format(format);
@@ -112,56 +112,62 @@ export default function (config, helper) {
   };
 
   Bars.tip = function (tip) {
-    const vm = this;
+    var vm = this;
     vm._config.tip = tip;
     return vm;
   };
 
   Bars.legend = function (legend) {
-    const vm = this;
+    var vm = this;
     vm._config.legend = legend;
     return vm;
   };
 
 
   //-------------------------------
-  // Triggered by the chart.js;
+  //Triggered by the chart.js;
   Bars.data = function (data) {
-    const vm = this;
+    var vm = this;
 
     if (vm._config.filter) {
-      // In case we want to filter observations
+      //In case we want to filter observations
       data = data.filter(vm._config.filter);
     }
 
     if (vm._config.hasOwnProperty('stackBy') && Array.isArray(vm._config.stackBy) && vm._config.stackBy.length > 0) {
-      // Used in a stackbar, transpose the data into layers
+      // Used in a stackbar, transpose the data into layers 
       vm._data = d3.stack().keys(vm._config.stackBy)(data);
     } else {
-      // Normal bar, save the data as numbers
-      vm._data = data.map((d) => {
-        if (d[vm._config.x] == Number(d[vm._config.x])) { d[vm._config.x] = +d[vm._config.x]; }
-        if (d[vm._config.y] == Number(d[vm._config.y])) { d[vm._config.y] = +d[vm._config.y]; }
+      // Normal bar, save the data as numbers 
+      vm._data = data.map(function (d) {
+        if (d[vm._config.x] == Number(d[vm._config.x]))
+          d[vm._config.x] = +d[vm._config.x];
+        if (d[vm._config.y] == Number(d[vm._config.y]))
+          d[vm._config.y] = +d[vm._config.y];
         return d;
       });
     }
 
-    // @TODO - ALLOW MULITPLE SORTS
+    //@TODO - ALLOW MULITPLE SORTS
     if (vm._config.sortBy) {
-      vm._data = vm._data.sort((a, b) => a[vm._config.sortBy[0]] - b[vm._config.sortBy[0]]);
+      vm._data = vm._data.sort(function (a, b) {
+        return a[vm._config.sortBy[0]] - b[vm._config.sortBy[0]];
+      });
     }
 
     if (vm._config.hasOwnProperty('quantiles')) {
       vm._quantiles = vm._setQuasecondntile(data);
-      vm._minMax = d3.extent(data, d => +d[vm._config.fill]);
+      vm._minMax = d3.extent(data, function (d) {
+        return +d[vm._config.fill];
+      });
     }
 
     return vm;
   };
 
   Bars.scales = function () {
-    const vm = this;
-    let config;
+    var vm = this;
+    var config;
     // vm._scales = scales;
     /* Use
      * vm._config.x
@@ -170,18 +176,13 @@ export default function (config, helper) {
      * vm._config.yAxis.scale
      * vm._data
      */
-    // Normal bars
-    if (vm._config.hasOwnProperty('x') && 
-        vm._config.hasOwnProperty('y') && 
-        vm._config.hasOwnProperty('xAxis') && 
-        vm._config.hasOwnProperty('yAxis') && 
-        vm.chart.hasOwnProperty('width') && 
-        vm.chart.hasOwnProperty('height')) {
+    //Normal bars 
+    if (vm._config.hasOwnProperty('x') && vm._config.hasOwnProperty('y')) {
       config = {
         column: vm._config.x,
         type: vm._config.xAxis.scale,
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero,
+        minZero: vm._config.xAxis.minZero
       };
       if (vm._config.xAxis.domains) {
         config.domains = vm._config.xAxis.domains;
@@ -192,7 +193,7 @@ export default function (config, helper) {
         column: vm._config.y,
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: vm._config.yAxis.minZero,
+        minZero: vm._config.yAxis.minZero
       };
       if (vm._config.yAxis.domains) {
         config.domains = vm._config.yAxis.domains;
@@ -200,20 +201,15 @@ export default function (config, helper) {
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
-    // GroupBy bars on the xAxis
-    if (vm._config.hasOwnProperty('x') && 
-        vm._config.hasOwnProperty('groupBy') &&
-        vm._config.hasOwnProperty('xAxis') && 
-        vm._config.hasOwnProperty('yAxis') && 
-        vm.chart.hasOwnProperty('width') && 
-        vm.chart.hasOwnProperty('height')) {
+    //GroupBy bars on the xAxis
+    if (vm._config.hasOwnProperty('x') && vm._config.hasOwnProperty('groupBy')) {
       /* Generate x scale */
       config = {
         column: vm._config.x,
         type: vm._config.xAxis.scale,
         groupBy: 'parent',
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero,
+        minZero: vm._config.xAxis.minZero
       };
       if (vm._config.xAxis.domains) {
         config.domains = vm._config.xAxis.domains;
@@ -228,7 +224,7 @@ export default function (config, helper) {
         range: [0, vm._scales.x.bandwidth()],
       };
       vm._scales.groupBy = vm.utils.generateScale(vm._data, config);
-      // vm.chart.scales.groupBy = vm._scales.groupBy;
+      //vm.chart.scales.groupBy = vm._scales.groupBy; 
 
       /* Generate y scale */
       config = {
@@ -238,26 +234,21 @@ export default function (config, helper) {
         range: [vm.chart.height, 0],
         minZero: vm._config.yAxis.minZero,
       };
-      if (vm._config.yAxis.domains) {
+      if(vm._config.yAxis.domains) {
         config.domains = vm._config.yAxis.domains;
       }
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
-    // GroupBy bars on the yAxis
-    if (vm._config.hasOwnProperty('y') && 
-        vm._config.hasOwnProperty('groupBy') &&
-        vm._config.hasOwnProperty('xAxis') && 
-        vm._config.hasOwnProperty('yAxis') && 
-        vm.chart.hasOwnProperty('width') && 
-        vm.chart.hasOwnProperty('height')) {
+    //GroupBy bars on the yAxis
+    if (vm._config.hasOwnProperty('y') && vm._config.hasOwnProperty('groupBy')) {
       /* Generate y scale */
       config = {
         column: vm._config.y,
         type: vm._config.yAxis.scale,
         groupBy: 'parent',
         range: [0, vm.chart.height],
-        minZero: vm._config.yAxis.minZero,
+        minZero: vm._config.yAxis.minZero
       };
       if (vm._config.yAxis.domains) {
         config.domains = vm._config.yAxis.domains;
@@ -272,7 +263,7 @@ export default function (config, helper) {
         range: [0, vm._scales.y.bandwidth()],
       };
       vm._scales.groupBy = vm.utils.generateScale(vm._data, config);
-      // vm.chart.scales.groupBy = vm._scales.groupBy;
+      //vm.chart.scales.groupBy = vm._scales.groupBy; 
 
       /* Generate x scale */
       config = {
@@ -280,7 +271,7 @@ export default function (config, helper) {
         type: vm._config.xAxis.scale,
         groupBy: 'data',
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero,
+        minZero: vm._config.xAxis.minZero
       };
       if (vm._config.xAxis.domains) {
         config.domains = vm._config.xAxis.domains;
@@ -289,7 +280,7 @@ export default function (config, helper) {
     }
 
 
-    // Stack bars on the xAxis
+    //Stack bars on the xAxis
     if (vm._config.hasOwnProperty('x') && vm._config.hasOwnProperty('stackBy')) {
       /* Generate x scale */
       config = {
@@ -297,7 +288,7 @@ export default function (config, helper) {
         type: vm._config.xAxis.scale,
         stackBy: 'parent',
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero,
+        minZero: vm._config.xAxis.minZero
       };
       if (vm._config.xAxis.domains) {
         config.domains = vm._config.xAxis.domains;
@@ -310,7 +301,7 @@ export default function (config, helper) {
         stackBy: 'data',
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: vm._config.yAxis.minZero,
+        minZero: vm._config.yAxis.minZero
       };
       if (vm._config.yAxis.domains) {
         config.domains = vm._config.yAxis.domains;
@@ -326,7 +317,7 @@ export default function (config, helper) {
         type: vm._config.xAxis.scale,
         stackBy: 'data',
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero,
+        minZero: vm._config.xAxis.minZero
       };
       if (vm._config.xAxis.domains) {
         config.domains = vm._config.xAxis.domains;
@@ -339,7 +330,7 @@ export default function (config, helper) {
         stackBy: 'parent',
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: vm._config.yAxis.minZero,
+        minZero: vm._config.yAxis.minZero
       };
       if (vm._config.yAxis.domains) {
         config.domains = vm._config.yAxis.domains;
@@ -348,36 +339,34 @@ export default function (config, helper) {
     }
 
 
-    // vm.chart.scales.x = vm._scales.x;
-    // vm.chart.scales.y = vm._scales.y;
-    if(vm._scales.color && vm._scales.color.domain().length === 0) {
-      if (vm._config.hasOwnProperty('colors')) { 
-        vm._scales.color = d3.scaleOrdinal(vm._config.colors); 
-      } else { 
-        vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10); 
-      }
-  
-      if (vm._data && vm._data.length > 0) {
-        vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
-      }
-      if (vm._config.legend && vm._config.legend.length > 0) {
-        vm._scales.color.domain(vm._config.legend.map(d => d.name));
-      }
+    //vm.chart.scales.x = vm._scales.x;
+    //vm.chart.scales.y = vm._scales.y;
+
+    if (vm._config.hasOwnProperty('colors'))
+      vm._scales.color = d3.scaleOrdinal(vm._config.colors);
+    else
+      vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    if (vm._data && vm._data.length > 0) {
+      vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
+    }
+    if (vm._config.legend && vm._config.legend.length > 0) {
+      vm._scales.color.domain(vm._config.legend.map(d => d.name));
     }
 
     return vm;
   };
 
   Bars.drawLabels = function () {
-    const vm = this;
+    var vm = this;
 
-    const charContainer = vm.chart.svg().selectAll('.dbox-label')
+    var charContainer = vm.chart.svg().selectAll('.dbox-label')
       .data(vm._data);
 
     charContainer.enter().append('text')
       .attr('class', 'dbox-label')
-      .attr('x', (d) => {
-        let value = vm._scales.x(d[vm._config.x]);
+      .attr('x', function (d) {
+        var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
           if (d[vm._config.x] > 0) {
             value = vm._scales.x(0);
@@ -385,39 +374,75 @@ export default function (config, helper) {
         }
         return value;
       })
-      .attr('y', (d) => {
-        let value = vm._scales.y(d[vm._config.y]);
-        const barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
+      .attr('y', function (d) {
+        var value =  vm._scales.y(d[vm._config.y]);
+        var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
         if (vm._config.yAxis.scale === 'linear') {
-          if (d[vm._config.y] < 0) {
+          if (d[vm._config.y] < 0) { 
             value = vm._scales.y(0);
           }
         } else if (vm._config.yAxis.scale !== 'linear') {
-          value += barH;
+          value = value + barH;
         }
         // if (barH < 50) {
         //   return value - 30;
         // }
         return value - 7;
       })
-      .attr('transform', (d) => {
-        const barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+      .attr('transform', function(d) {
+        var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
         if (!isNaN(d[vm._config.y])) {
-          return `translate(${barW / 2}, 0)`;
-        }
-        return `translate(${barW + 30}, 0)`;
+          return 'translate(' + barW/2 + ', 0)';
+        } 
+        return 'translate(' + (barW + 30) + ', 0)';
       })
       .attr('text-anchor', 'middle')
-      .text((d) => {
+      .text( function(d) {
         if (!isNaN(d[vm._config.y])) {
           return vm.utils.format(d[vm._config.y]) ? vm.utils.format(d[vm._config.y], true, vm._config.decimals) : '';
         }
         return vm.utils.format(d[vm._config.x]) ? vm.utils.format(d[vm._config.x], true, vm._config.decimals) : '';
       });
+    
+    // charContainer.enter().append('text')
+    //   .attr('class', 'dbox-label-coefficient dbox-label-bars-coefficient')
+    //   .attr('x', function (d) {
+    //     var value = vm._scales.x(d[vm._config.x]);
+    //     if (vm._config.xAxis.scale == 'linear') {
+    //       if (d[vm._config.x] > 0) {
+    //         value = vm._scales.x(0);
+    //       }
+    //     }
+    //     return value;
+    //   })
+    //   .attr('y', function (d) {
+    //     var value =  vm._scales.y(d[vm._config.y]);
+    //     var barH = vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
+    //     if (vm._config.yAxis.scale === 'linear') {
+    //       if (d[vm._config.y] < 0) { 
+    //         value = vm._scales.y(0);
+    //       }
+    //     }
+    //     // if (barH < 50) {
+    //     //   return value - 32;
+    //     // }
+    //     return value + 35;
+    //   })
+    //   .attr('transform', function(d) {
+    //     var barW = vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+    //     if (!isNaN(d[vm._config.y])) {
+    //       return 'translate(' + barW/2 + ', 0)';
+    //     } 
+    //     return 'translate(' + (barW + 30) + ', 0)';
+    //   })
+    //   .attr('text-anchor', 'middle')
+    //   .text( function(d) {
+    //     return (d.coefficient && !Number.isNaN(d.coefficient)) ? '(' + d.coefficient.toFixed(1) + ')' : '(-)';
+    //   });
   };
 
   Bars.draw = function () {
-    const vm = this;
+    var vm = this;
     if (vm._config.hasOwnProperty('groupBy')) {
       if (vm._config.hasOwnProperty('x')) vm._drawGroupByXAxis();
       if (vm._config.hasOwnProperty('y')) vm._drawGroupByYAxis();
@@ -434,18 +459,17 @@ export default function (config, helper) {
 
     vm.chart.svg().selectAll('.bar')
       .data(vm._data)
-      .enter()
-      .append('rect')
+      .enter().append('rect')
       .attr('class', 'bar')
-      .attr('id', (d, i) => {
-        let id = `bars-${i}`;
+      .attr('id', function (d, i) {
+        var id = 'bars-' + i;
         if (vm._config.id) {
-          id = `bars-${d[vm._config.id]}`;
+          id = 'bars-' + d[vm._config.id];
         }
         return id;
       })
-      .attr('x', (d) => {
-        let value = vm._scales.x(d[vm._config.x]);
+      .attr('x', function (d) {
+        var value = vm._scales.x(d[vm._config.x]);
         if (vm._config.xAxis.scale == 'linear') {
           if (d[vm._config.x] > 0) {
             value = vm._scales.x(0);
@@ -453,38 +477,47 @@ export default function (config, helper) {
         }
         return value;
       })
-      .attr('y', (d) => {
-        let value = vm._scales.y(d[vm._config.y]);
+      .attr('y', function (d) {
+        var value =  vm._scales.y(d[vm._config.y]);
         if (vm._config.yAxis.scale === 'linear') {
-          if (d[vm._config.y] < 0) {
+          if (d[vm._config.y] < 0) { 
             value = vm._scales.y(0);
           }
         }
         return value;
       })
-      .attr('width', d => (vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0))))
-      .attr('height', d => (vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0))))
-      .attr('fill', (d) => {
+      .attr('width', function (d) {
+        return vm._scales.x.bandwidth ? vm._scales.x.bandwidth() : Math.abs(vm._scales.x(d[vm._config.x]) - vm._scales.x(0));
+      })
+      .attr('height', function (d) {
+        return vm._scales.y.bandwidth ? vm._scales.y.bandwidth() : Math.abs(vm._scales.y(d[vm._config.y]) - vm._scales.y(0));
+      })
+      .attr('fill', function (d) {
         return vm._scales.color !== false ? vm._scales.color(d[vm._config.fill]) : vm._getQuantileColor(d[vm._config.fill], 'default');
       })
       .style('opacity', 0.9)
       .on('mouseover', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'onHover'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover colors
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'onHover');
+          });
         }
         vm._tip.show(d, d3.select(this).node());
 
-        if (vm._config.hasOwnProperty('onmouseover')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseover')) { //External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseover.call(this, d, i);
         }
+
       })
       .on('mouseout', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover reset default color
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'default'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover reset default color
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'default');
+          });
         }
         vm._tip.hide();
 
-        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseout')) { //External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseout.call(this, d, i);
         }
       })
@@ -499,102 +532,127 @@ export default function (config, helper) {
     return vm;
   };
 
-  /**
-   * Draw bars grouped by
+  /** 
+   * Draw bars grouped by 
    */
 
   Bars.drawGroupLabels = function () {
-    const vm = this;
+    var vm = this;
 
-    vm.chart.svg().selectAll('.grouped').each(function () {
-      const el = this;
+    vm.chart.svg().selectAll('.grouped').each(function() {
+      var el = this;
 
-      d3.select(this).selectAll('rect').each((dat, index) => {
+      d3.select(this).selectAll('rect').each(function(dat, index) {
         d3.select(el).append('text')
           .attr('class', 'dbox-label')
-          .attr('transform', (d) => {
-            const barReference = vm._scales.groupBy.bandwidth();
-            if (vm._config.x) {
-              return `translate(${vm._scales.groupBy(vm._config.groupBy[index]) + barReference / 2},${vm._scales.y(d[vm._config.groupBy[index]]) - 7})`;
+          .attr('transform', function(d) {
+            var barReference = vm._scales.groupBy.bandwidth();
+            if(vm._config.x) {
+              //if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + barReference/2) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) - 7) + ')';
+              //}
+              //return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 20) + ')';
+            } else {
+              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + barReference) + ')';
             }
-            return `translate(${vm._scales.x(d[vm._config.groupBy[index]]) + 26},${vm._scales.groupBy(vm._config.groupBy[index]) + barReference})`;
           })
           .attr('text-anchor', 'middle')
-          .text(d => (d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], true, vm._config.decimals) : ''));
+          .text( function(d) {
+            return d[vm._config.groupBy[index]] ? vm.utils.format(d[vm._config.groupBy[index]], true, vm._config.decimals) : '';
+          });
 
         d3.select(el).append('text')
           .attr('class', 'dbox-label-coefficient')
-          .attr('transform', (d) => {
-            if (vm._config.x) {
+          .attr('transform', function(d) {
+            if(vm._config.x) {
               if (Math.abs(vm._scales.y(d[vm._config.groupBy[index]]) - vm._scales.y(0)) < 50) {
-                return `translate(${vm._scales.groupBy(vm._config.groupBy[index]) + 30},${vm._scales.y(d[vm._config.groupBy[index]])})`;
+                return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]])) + ')';
               }
-              return `translate(${vm._scales.groupBy(vm._config.groupBy[index]) + 30},${vm._scales.y(d[vm._config.groupBy[index]]) + 40})`;
+              return 'translate(' + (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ',' + (vm._scales.y(d[vm._config.groupBy[index]]) + 40 ) + ')';
+            } else {
+              return 'translate(' + ((vm._scales.x(d[vm._config.groupBy[index]]) + 26)) + ',' +  (vm._scales.groupBy(vm._config.groupBy[index]) + 30) + ')';
             }
-            return `translate(${vm._scales.x(d[vm._config.groupBy[index]]) + 26},${vm._scales.groupBy(vm._config.groupBy[index]) + 30})`;
           })
           .attr('text-anchor', 'middle')
-          .text(d => (d[`${vm._config.groupBy[index] }coefficient`] && !Number.isNaN(d[`${vm._config.groupBy[index] }coefficient`]) ? `(${ d[`${vm._config.groupBy[index]  }coefficient`].toFixed(1)})` : ''));
+          .text( function(d) {
+            return d[vm._config.groupBy[index] + 'coefficient'] && !Number.isNaN(d[vm._config.groupBy[index] + 'coefficient'])  ? '(' + d[vm._config.groupBy[index] + 'coefficient'].toFixed(1) + ')': '';
+          });
       });
     });
   };
 
   Bars._drawGroupByXAxis = function () {
-    const vm = this;
-    vm._tip.html(vm._config.tip || ((d) => {
-      let html = `${d.key}<br>`;
+    var vm = this;
+    vm._tip.html(vm._config.tip || function (d) {
+      let html =  d.key + '<br>';
       if (d.axis !== d.key) {
-        html += `${d.axis}<br>`;
+        html += d.axis + '<br>';
       }
       html += vm.utils.format(d.value);
       return html;
-    }));
+    });
 
     vm.chart.svg().call(vm._tip);
 
     vm.chart.svg().append('g')
       .selectAll('g')
       .data(vm._data)
-      .enter()
-      .append('g')
+      .enter().append('g')
       .attr('class', 'grouped')
-      .attr('transform', d => `translate(${vm._scales.x(d[vm._config.x])},0)`)
+      .attr('transform', function (d) {
+        return 'translate(' + vm._scales.x(d[vm._config.x]) + ',0)';
+      })
       .selectAll('rect')
-      .data(d => vm._config.groupBy.map(key => ({
-        key,
-        value: d[key],
-        axis: d[vm._config.x],
-      })))
-      .enter()
-      .append('rect')
-      .attr('x', d => vm._scales.groupBy(d.key))
-      .attr('y', (d) => {
+      .data(function (d) {
+        return vm._config.groupBy.map(function (key) {
+          return {
+            key: key,
+            value: d[key],
+            axis: d[vm._config.x]
+          };
+        });
+      })
+      .enter().append('rect')
+      .attr('x', function (d) {
+        return vm._scales.groupBy(d.key);
+      })
+      .attr('y', function (d) {
         if (d.value > 0) {
           return vm._scales.y(d.value);
+        } else {
+          return vm._scales.y(0);
         }
-        return vm._scales.y(0);
       })
       .attr('width', vm._scales.groupBy.bandwidth())
-      .attr('height', d => Math.abs(vm._scales.y(d.value) - vm._scales.y(0)))
-      .attr('fill', d => vm._scales.color(d.key))
+      .attr('height', function (d) {
+        return Math.abs(vm._scales.y(d.value) - vm._scales.y(0));
+      })
+      .attr('fill', function (d) {
+        return vm._scales.color(d.key);
+      })
       .on('mouseover', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'onHover'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover colors
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'onHover');
+          });
         }
         vm._tip.show(d, d3.select(this).node());
 
         if (vm._config.hasOwnProperty('onmouseover')) {
-          // External function call. It must be after all the internal code; allowing the user to overide
+          //External function call. It must be after all the internal code; allowing the user to overide 
           vm._config.onmouseover.call(this, d, i);
         }
+
       })
       .on('mouseout', function (d, i) {
         if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'default'));
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'default');
+          });
         }
         vm._tip.hide();
 
-        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseout.call(this, d, i);
         }
       })
@@ -608,61 +666,77 @@ export default function (config, helper) {
   };
 
   Bars._drawGroupByYAxis = function () {
-    const vm = this;
-    vm._tip.html(vm._config.tip || ((d) => {
-      let html = `${d.key}<br>`;
+    var vm = this;
+    vm._tip.html(vm._config.tip || function (d) {
+      let html = d.key + '<br>';
       if (d.axis !== d.key) {
-        html += `${d.axis}<br>`;
+        html += d.axis + '<br>';
       }
       html += vm.utils.format(d.value);
       return html;
-    }));
+    });
 
     vm.chart.svg().call(vm._tip);
 
     vm.chart.svg().append('g')
       .selectAll('g')
       .data(vm._data)
-      .enter()
-      .append('g')
+      .enter().append('g')
       .attr('class', 'grouped')
-      .attr('transform', d => `translate(0,${vm._scales.y(d[vm._config.y])} )`)
+      .attr('transform', function (d) {
+        return 'translate(0,' + vm._scales.y(d[vm._config.y]) + ' )';
+      })
       .selectAll('rect')
-      .data(d => vm._config.groupBy.map(key => ({
-        key,
-        value: d[key],
-        axis: d[vm._config.y],
-      })))
-      .enter()
-      .append('rect')
-      .attr('y', d => vm._scales.groupBy(d.key))
-      .attr('x', (d) => {
+      .data(function (d) {
+        return vm._config.groupBy.map(function (key) {
+          return {
+            key: key,
+            value: d[key],
+            axis: d[vm._config.y]
+          };
+        });
+      })
+      .enter().append('rect')
+      .attr('y', function (d) {
+        return vm._scales.groupBy(d.key);
+      })
+      .attr('x', function(d) {
         if (d < 0) {
           return vm._scales.x(d.value);
+        } else {
+          return vm._scales.x(0);
         }
-        return vm._scales.x(0);
       })
-      .attr('width', d => Math.abs(vm._scales.x(d.value) - vm._scales.x(0)))
+      .attr('width', function (d) {
+        return Math.abs(vm._scales.x(d.value) - vm._scales.x(0));
+      })
       .attr('height', vm._scales.groupBy.bandwidth())
-      .attr('fill', d => vm._scales.color(d.key))
+      .attr('fill', function (d) {
+        return vm._scales.color(d.key);
+      })
       .on('mouseover', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'onHover'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover colors
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'onHover');
+          });
         }
         vm._tip.show(d, d3.select(this).node());
 
         if (vm._config.hasOwnProperty('onmouseover')) {
-          // External function call. It must be after all the internal code; allowing the user to overide
+          //External function call. It must be after all the internal code; allowing the user to overide 
           vm._config.onmouseover.call(this, d, i);
         }
+
       })
       .on('mouseout', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover reset default color
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'default'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover reset default color
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'default');
+          });
         }
         vm._tip.hide();
 
-        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseout')) { //External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseout.call(this, d, i);
         }
       })
@@ -678,34 +752,36 @@ export default function (config, helper) {
    * Draw Stack Labels
    */
   Bars.drawStackLabels = function () {
-    const vm = this;
-    const groups = vm.chart.svg().selectAll('.division');
+    var vm = this;
+    var groups = vm.chart.svg().selectAll('.division');
     let index = 0;
-    groups.each(function (data) {
-      const stacks = d3.select(this).selectAll('rect').nodes();
+    groups.each(function(data) {
+      var stacks = d3.select(this).selectAll('rect').nodes();
       // Get rect height to condition label drawing
       data.forEach((d) => {
-        const el = this;
-        const dat = d;
-        const rect = stacks[index];
+        var el = this;
+        var dat = d;
+        var rect = stacks[index];
         index++;
-        const rectH = rect.getBBox().height;
-        // var rectW = rect.getBBox().width;
-        if (rectH > 35) {
+        var rectH = rect.getBBox().height;
+        //var rectW = rect.getBBox().width;
+        if(rectH > 35) {
           d3.select(el).append('text')
             .attr('class', 'dbox-label')
             .attr('text-anchor', 'middle')
-            .attr('transform', () => {
-              let barReference;
-              if (vm._config.x) {
+            .attr('transform', function() {
+              var barReference;
+              if(vm._config.x) {
                 barReference = vm._scales.x.bandwidth();
-                return `translate(${vm._scales.x(dat.data[vm._config.x]) + barReference / 2},${vm._scales.y(dat[1]) + 20})`;
+                return 'translate(' + (vm._scales.x(dat.data[vm._config.x]) + barReference/2) + ',' + (vm._scales.y(dat[1]) + 20) + ')';
               }
               barReference = vm._scales.y.bandwidth();
-              return `translate(${vm._scales.x(dat.data[1]) - 30},${vm._scales.y(dat.data[vm._config.y]) + barReference / 2})`;
+              return 'translate(' + (vm._scales.x(dat.data[1]) - 30) + ',' + (vm._scales.y(dat.data[vm._config.y]) + barReference/2) + ')';
             })
-            .text(() => (dat.data[data.key] ? vm.utils.format(dat.data[data.key], true, vm._config.decimals) : ''));
-        }
+            .text(function() {
+              return dat.data[data.key] ? vm.utils.format(dat.data[data.key], true, vm._config.decimals) : '';
+            });
+          }
       });
       index = 0;
     });
@@ -715,54 +791,69 @@ export default function (config, helper) {
    * Draw bars stacked by x axis
    */
   Bars._drawStackByXAxis = function () {
-    const vm = this;
-    vm._tip.html(vm._config.tip || ((d) => {
-      let html = '';
-      for (const k in d.data) {
+    var vm = this;
+    vm._tip.html(vm._config.tip || function (d) {
+      var html = '';
+      for (var k in d.data) {
         if ((d[1] - d[0]).toFixed(12) === Number(d.data[k]).toFixed(12)) {
-          html += `${k}<br>`;
+          html += k + '<br>';
         }
       }
       html += d.data[vm._config.x];
-      return `${html}<br>${vm.utils.format((d[1] - d[0]))}`;
-    }));
+      return html + '<br>' + vm.utils.format((d[1] - d[0]));
+    });
 
     vm.chart.svg().call(vm._tip);
 
     vm.chart.svg().append('g')
       .selectAll('g')
       .data(vm._data)
-      .enter()
-      .append('g')
+      .enter().append('g')
       .attr('class', 'division')
-      .attr('fill', d => vm._scales.color(d.key))
-      // .attr('transform', function(d) { return 'translate(0,'+ vm._scales.y(d[vm._config.y]) +' )'; })
+      .attr('fill', function (d) {
+        return vm._scales.color(d.key);
+      })
+      //.attr('transform', function(d) { return 'translate(0,'+ vm._scales.y(d[vm._config.y]) +' )'; })
       .selectAll('rect')
-      .data(d => d)
-      .enter()
-      .append('rect')
-      .attr('y', d => vm._scales.y(d[1]))
-      .attr('x', d => vm._scales.x(d.data[vm._config.x]))
-      .attr('width', () => vm._scales.x.bandwidth())
-      .attr('height', d => vm._scales.y(d[0]) - vm._scales.y(d[1]))
+      .data(function (d) {
+        return d;
+      })
+      .enter().append('rect')
+      .attr('y', function (d) {
+        return vm._scales.y(d[1]);
+      })
+      .attr('x', function (d) {
+        return vm._scales.x(d.data[vm._config.x]);
+      })
+      .attr('width', function () {
+        return vm._scales.x.bandwidth();
+      })
+      .attr('height', function (d) {
+        return vm._scales.y(d[0]) - vm._scales.y(d[1]);
+      })
       .on('mouseover', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'onHover'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover colors
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'onHover');
+          });
         }
         vm._tip.show(d, d3.select(this).node());
 
         if (vm._config.hasOwnProperty('onmouseover')) {
-          // External function call. It must be after all the internal code; allowing the user to overide
+          //External function call. It must be after all the internal code; allowing the user to overide 
           vm._config.onmouseover.call(this, d, i);
         }
+
       })
       .on('mouseout', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover reset default color
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'default'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover reset default color
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'default');
+          });
         }
         vm._tip.hide();
 
-        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseout')) { //External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseout.call(this, d, i);
         }
       })
@@ -778,53 +869,68 @@ export default function (config, helper) {
    * Draw bars stacked by y axis
    */
   Bars._drawStackByYAxis = function () {
-    const vm = this;
-    vm._tip.html(vm._config.tip || ((d) => {
-      let html = '';
-      for (const k in d.data) {
+    var vm = this;
+    vm._tip.html(vm._config.tip || function (d) {
+      var html = '';
+      for (var k in d.data) {
         if ((d[1] - d[0]).toFixed(12) === Number(d.data[k]).toFixed(12)) {
-          html += `${k}<br>`;
+          html += k + '<br>';
         }
       }
       html += d.data[vm._config.y];
-      return `${html}<br>${vm.utils.format((d[1] - d[0]))}`;
-    }));
+      return html + '<br>' + vm.utils.format((d[1] - d[0]));
+    });
 
     vm.chart.svg().call(vm._tip);
 
     vm.chart.svg().append('g')
       .selectAll('g')
       .data(vm._data)
-      .enter()
-      .append('g')
+      .enter().append('g')
       .attr('class', 'division')
-      .attr('fill', d => vm._scales.color(d.key))
+      .attr('fill', function (d) {
+        return vm._scales.color(d.key);
+      })
       .selectAll('rect')
-      .data(d => d)
-      .enter()
-      .append('rect')
-      .attr('y', d => vm._scales.y(d.data[vm._config.y]))
-      .attr('x', d => vm._scales.x(d[0]))
-      .attr('height', () => vm._scales.y.bandwidth())
-      .attr('width', d => vm._scales.x(d[1]) - vm._scales.x(d[0]))
+      .data(function (d) {
+        return d;
+      })
+      .enter().append('rect')
+      .attr('y', function (d) {
+        return vm._scales.y(d.data[vm._config.y]);
+      })
+      .attr('x', function (d) {
+        return vm._scales.x(d[0]);
+      })
+      .attr('height', function () {
+        return vm._scales.y.bandwidth();
+      })
+      .attr('width', function (d) {
+        return vm._scales.x(d[1]) - vm._scales.x(d[0]);
+      })
       .on('mouseover', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover colors
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'onHover'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover colors
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'onHover');
+          });
         }
         vm._tip.show(d, d3.select(this).node());
 
         if (vm._config.hasOwnProperty('onmouseover')) {
-          // External function call. It must be after all the internal code; allowing the user to overide
+          //External function call. It must be after all the internal code; allowing the user to overide 
           vm._config.onmouseover.call(this, d, i);
         }
+
       })
       .on('mouseout', function (d, i) {
-        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { // OnHover reset default color
-          d3.select(this).attr('fill', d => vm._getQuantileColor(d[vm._config.fill], 'default'));
+        if (vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) { //OnHover reset default color
+          d3.select(this).attr('fill', function (d) {
+            return vm._getQuantileColor(d[vm._config.fill], 'default');
+          });
         }
         vm._tip.hide();
 
-        if (vm._config.hasOwnProperty('onmouseout')) { // External function call, must be after all the internal code; allowing the user to overide
+        if (vm._config.hasOwnProperty('onmouseout')) { //External function call, must be after all the internal code; allowing the user to overide 
           vm._config.onmouseout.call(this, d, i);
         }
       })
@@ -838,45 +944,51 @@ export default function (config, helper) {
   };
 
   Bars._setQuantile = function (data) {
-    const vm = this;
-    const values = [];
-    let quantile = [];
+    var vm = this;
+    var values = [];
+    var quantile = [];
 
-    if (vm._config.quantiles && vm._config.quantiles.predefinedQuantiles
-      && vm._config.quantiles.predefinedQuantiles.length > 0) {
+    if (vm._config.quantiles && vm._config.quantiles.predefinedQuantiles &&
+      vm._config.quantiles.predefinedQuantiles.length > 0) {
       return vm._config.quantiles.predefinedQuantiles;
     }
 
-    data.forEach((d) => {
+    data.forEach(function (d) {
       values.push(+d[vm._config.fill]);
     });
 
     values.sort(d3.ascending);
 
-    // @TODO use quantile scale instead of manual calculations
+    //@TODO use quantile scale instead of manual calculations 
     if (vm._config && vm._config.quantiles && vm._config.quantiles.buckets) {
+
       if (vm._config.quantiles.ignoreZeros === true) {
-        const aux = _.dropWhile(values, o => o <= 0);
-        // aux.unshift(values[0]);
+        var aux = _.dropWhile(values, function (o) {
+          return o <= 0;
+        });
+        //aux.unshift(values[0]);  
 
         quantile.push(values[0]);
         quantile.push(0);
 
-        for (let i = 1; i <= vm._config.quantiles.buckets - 1; i++) {
+        for (var i = 1; i <= vm._config.quantiles.buckets - 1; i++) {
           quantile.push(d3.quantile(aux, i * 1 / (vm._config.quantiles.buckets - 1)));
         }
+
       } else {
         quantile.push(d3.quantile(values, 0));
-        for (let j = 1; j <= vm._config.quantiles.buckets; j++) {
+        for (var j = 1; j <= vm._config.quantiles.buckets; j++) {
           quantile.push(d3.quantile(values, j * 1 / vm._config.quantiles.buckets));
         }
       }
+
     } else {
       quantile = [d3.quantile(values, 0), d3.quantile(values, 0.2), d3.quantile(values, 0.4), d3.quantile(values, 0.6), d3.quantile(values, 0.8), d3.quantile(values, 1)];
     }
 
-    // @TODO - VALIDATE WHEN ZEROS NEED TO BE PUT ON QUANTILE 1 AND RECALCULATE NON ZERO VALUES INTO THE REST OF THE BUCKETS
+    //@TODO - VALIDATE WHEN ZEROS NEED TO BE PUT ON QUANTILE 1 AND RECALCULATE NON ZERO VALUES INTO THE REST OF THE BUCKETS
     if (vm._config.quantiles && vm._config.quantiles.buckets && vm._config.quantiles.buckets === 5) {
+
       if (quantile[1] === quantile[2] && quantile[2] === quantile[3] && quantile[3] === quantile[4] && quantile[4] === quantile[5]) {
         quantile = [d3.quantile(values, 0), d3.quantile(values, 0.2)];
       }
@@ -906,9 +1018,9 @@ export default function (config, helper) {
         if (type == 'default') {
           if (total <= vm._quantiles[1]) {
             return vm._config.bars.quantiles.colors[0]; //'#f7c7c5';
-          } if (total <= vm._quantiles[2]) {
+          } else if (total <= vm._quantiles[2]) {
             return vm._config.bars.quantiles.colors[1]; //'#e65158';
-          } if (total <= vm._quantiles[3]) {
+          } else if (total <= vm._quantiles[3]) {
             return vm._config.bars.quantiles.colors[2]; //'#c20216';
           } else if (total <= vm._quantiles[4]) {
             return vm._config.quantiles.colors[3]; //'#750000';
@@ -920,13 +1032,13 @@ export default function (config, helper) {
         if (type == 'onHover' && vm._config.hasOwnProperty('quantiles') && vm._config.quantiles.hasOwnProperty('colorsOnHover')) {
           if (total <= vm._quantiles[1]) {
             return vm._config.quantiles.colorsOnHover[0]; //'#f7c7c5';
-          } if (total <= vm._quantiles[2]) {
+          } else if (total <= vm._quantiles[2]) {
             return vm._config.quantiles.colorsOnHover[1]; //'#e65158';
-          } if (total <= vm._quantiles[3]) {
+          } else if (total <= vm._quantiles[3]) {
             return vm._config.quantiles.colorsOnHover[2]; //'#c20216';
-          } if (total <= vm._quantiles[4]) {
+          } else if (total <= vm._quantiles[4]) {
             return vm._config.quantiles.colorsOnHover[3]; //'#750000';
-          } if (total <= vm._quantiles[5]) {
+          } else if (total <= vm._quantiles[5]) {
             return vm._config.quantiles.colorsOnHover[4]; //'#480000';
           }
         }
