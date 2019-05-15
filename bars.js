@@ -342,19 +342,20 @@ export default function (config, helper) {
     //vm.chart.scales.x = vm._scales.x;
     //vm.chart.scales.y = vm._scales.y;
 
-    if (vm._config.hasOwnProperty('colors'))
-      vm._scales.color = d3.scaleOrdinal(vm._config.colors);
-    else
-      vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    if (vm._data && vm._data.length > 0) {
-      vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
+    if(vm._scales.color && vm._scales.color.domain().length === 0) {
+      if (vm._config.hasOwnProperty('colors')) { 
+        vm._scales.color = d3.scaleOrdinal(vm._config.colors); 
+      } else { 
+        vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10); 
+      }
+      if (vm._data && vm._data.length > 0) {
+        vm._scales.color.domain(_.uniq(vm._data.map(d => d[vm._config.fill])));
+      }
+      if (vm._config.legend && vm._config.legend.length > 0) {
+        vm._scales.color.domain(vm._config.legend.map(d => d.name));
+      }
+      return vm;
     }
-    if (vm._config.legend && vm._config.legend.length > 0) {
-      vm._scales.color.domain(vm._config.legend.map(d => d.name));
-    }
-
-    return vm;
   };
 
   Bars.drawLabels = function () {
