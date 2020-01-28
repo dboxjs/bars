@@ -100,7 +100,7 @@ export default function(config, helper) {
   Bars.colors = function(colors) {
     var vm = this;
     if (Array.isArray(colors)) {
-      //Using an array of colors for the range
+      // Using an array of colors for the range
       vm._config.colors = colors;
     } else {
       //Using a preconfigured d3.scale
@@ -371,7 +371,10 @@ export default function(config, helper) {
     //vm.chart.scales.x = vm._scales.x;
     //vm.chart.scales.y = vm._scales.y;
 
-    if (vm._scales.color && vm._scales.color.domain().length === 0) {
+    if (
+      !vm._scales.color ||
+      (vm._scales.color && vm._scales.color.domain().length === 0)
+    ) {
       if (vm._config.hasOwnProperty('colors')) {
         vm._scales.color = d3.scaleOrdinal(vm._config.colors);
       } else {
