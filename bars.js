@@ -14,9 +14,16 @@ export default function(config, helper) {
     vm._config = config ? config : {};
     vm._data = [];
     vm._scales = {};
+    console.log(vm._config);
     vm._tip = vm.utils.d3
       .tip()
-      .attr('class', 'd3-tip')
+      .attr(
+        'class',
+        'd3-tip ' +
+          (vm._config.tooltip && vm._config.tooltip.classed
+            ? vm._config.tooltip.classed
+            : '')
+      )
       .direction('n')
       .html(
         vm._config.tip ||
